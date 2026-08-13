@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrokerPass — Every deal, checked before it hits the desk.</title>
+<style>
+  :root{
+    --slate:#0F1B2D;--slate-2:#17263C;--green:#12B76A;--green-soft:rgba(18,183,106,.12);
+    --amber:#F5A623;--amber-soft:rgba(245,166,35,.14);--paper:#F7F6F2;--ink:#0F1B2D;
+    --muted:#5C6B7E;--line:rgba(15,27,45,.10);--white:#fff;--radius:16px;
+    --shadow:0 20px 50px -20px rgba(15,27,45,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+  a{text-decoration:none;color:inherit}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;background:rgba(247,246,242,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px;flex:none}
+  .nav-links{display:flex;gap:30px;align-items:center;font-size:15px;font-weight:500;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;border:none;cursor:pointer;padding:12px 22px;border-radius:999px;transition:.18s ease}
+  .btn-primary{background:var(--green);color:#04331f}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(18,183,106,.6)}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--white)}
+
+  /* HERO */
+  .hero{padding:78px 0 40px;text-align:center}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:26px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+  h1{font-size:clamp(38px,6vw,66px);line-height:1.03;letter-spacing:-.035em;font-weight:700;margin-bottom:22px}
+  h1 .clear{color:var(--green)}
+  .sub{font-size:clamp(17px,2.3vw,21px);color:var(--muted);max-width:660px;margin:0 auto 20px;font-weight:400}
+  .regs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:30px 0 12px}
+  .reg{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--slate)}
+
+  /* UPLOAD */
+  .upload-stage{max-width:760px;margin:40px auto 0}
+  .drop{background:var(--white);border:2px dashed rgba(18,183,106,.5);border-radius:24px;padding:52px 30px;text-align:center;cursor:pointer;transition:.2s ease;position:relative;overflow:hidden}
+  .drop:hover{border-color:var(--green);background:linear-gradient(180deg,#fff,#fbfffd)}
+  .drop.busy{border-style:solid;border-color:var(--green)}
+  .up-ico{width:60px;height:60px;margin:0 auto 18px;border-radius:16px;background:var(--green-soft);display:grid;place-items:center}
+  .drop h3{font-size:22px;letter-spacing:-.02em;margin-bottom:6px}
+  .drop p{color:var(--muted);font-size:15px}
+  .reassure{margin-top:14px;font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+  .scan{height:6px;width:100%;background:var(--line);border-radius:999px;margin-top:24px;overflow:hidden;display:none}
+  .scan.on{display:block}
+  .scan-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),#0bd47c);transition:width .2s linear}
+  .scan-label{font-size:13px;color:var(--muted);margin-top:10px;font-weight:600;display:none}
+  .scan-label.on{display:block}
+
+  /* REPORT */
+  .report{max-width:940px;margin:26px auto 0;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;opacity:0;transform:translateY(14px);transition:.4s ease;display:none;text-align:left}
+  .report.show{opacity:1;transform:none;display:block}
+  .rep-head{background:var(--slate);color:#fff;padding:20px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .rep-head .ttl{font-size:13px;color:#9fb0c6;font-weight:600}
+  .rep-head .file{font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .badge{display:inline-flex;align-items:center;gap:9px;background:var(--amber);color:#3d2a05;font-weight:700;font-size:14px;padding:10px 16px;border-radius:999px}
+  .rep-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:0}
+  /* doc preview */
+  .doc-pane{background:#eef0f3;padding:22px;border-right:1px solid var(--line)}
+  .doc-tabs{display:flex;gap:6px;margin-bottom:14px}
+  .doc-tab{font-size:12px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);padding:5px 10px;border-radius:7px}
+  .doc-tab.active{background:var(--slate);color:#fff;border-color:var(--slate)}
+  .page{background:#fff;border:1px solid var(--line);border-radius:6px;padding:20px 18px;box-shadow:0 6px 18px -10px rgba(0,0,0,.3);position:relative;font-size:9px;color:#classes}
+  .page h5{font-size:11px;color:var(--slate);margin-bottom:10px;letter-spacing:-.01em}
+  .ln{height:6px;background:#e4e7ec;border-radius:3px;margin:7px 0}
+  .ln.s{width:60%}.ln.m{width:82%}.ln.l{width:100%}
+  .sigrow{display:flex;gap:12px;margin-top:16px}
+  .sigbox{flex:1;border-top:1.5px solid #c8cdd6;padding-top:5px;font-size:8px;color:#98a2b3}
+  .marker{position:absolute;border:2.5px solid var(--amber);border-radius:8px;animation:pulse 1.6s infinite}
+  .marker .tagn{position:absolute;top:-9px;left:8px;background:var(--amber);color:#3d2a05;font-size:8px;font-weight:700;padding:1px 6px;border-radius:4px;white-space:nowrap}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,.5)}50%{box-shadow:0 0 0 6px rgba(245,166,35,0)}}
+  /* flags */
+  .flag-pane{padding:16px 16px 20px}
+  .row{display:flex;align-items:flex-start;gap:13px;padding:14px;border-radius:12px;margin:6px 4px}
+  .row.pass{background:var(--green-soft)}
+  .row.flag{background:var(--amber-soft)}
+  .rico{width:24px;height:24px;flex:none;border-radius:50%;display:grid;place-items:center;margin-top:2px}
+  .rico.pass{background:var(--green)}.rico.flag{background:var(--amber)}
+  .rtxt{flex:1}
+  .rtxt strong{display:block;font-size:15px;letter-spacing:-.01em}
+  .rtxt .mean{font-size:13px;color:var(--muted);margin:3px 0 2px}
+  .rtxt .why{font-size:12px;color:var(--slate);opacity:.7;font-style:italic}
+  .rmeta{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
+  .rtag{font-size:10.5px;font-weight:700;letter-spacing:.03em;color:var(--slate);background:var(--white);border:1px solid var(--line);padding:4px 8px;border-radius:6px}
+  .conf{font-size:10.5px;font-weight:600;color:var(--muted)}
+  .fixbtn{font-size:12px;font-weight:600;background:var(--slate);color:#fff;border:none;border-radius:8px;padding:6px 11px;cursor:pointer;transition:.15s}
+  .fixbtn:hover{background:#000}
+  .fixbtn.soft{background:#fff;color:var(--slate);border:1px solid var(--line)}
+  .rep-foot{border-top:1px solid var(--line);padding:16px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+  .rep-foot .l{font-size:13px;color:var(--muted)}
+
+  /* SECTION SHELL */
+  .sec{padding:72px 0}
+  .sec h2{text-align:center;font-size:clamp(28px,4vw,42px);letter-spacing:-.03em;margin-bottom:12px}
+  .sec .lead{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 46px;font-size:17px}
+  .eyebrow{text-align:center;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:14px}
+
+  /* DEAL DESK */
+  .desk{background:var(--white);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;max-width:900px;margin:0 auto}
+  .desk-top{background:var(--slate);color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+  .desk-top b{font-size:16px}
+  .desk-top span{font-size:13px;color:#9fb0c6}
+  .deal{display:grid;grid-template-columns:1.6fr .9fr .9fr auto;gap:12px;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line);font-size:14px}
+  .deal:last-child{border-bottom:none}
+  .deal .addr{font-weight:600}
+  .deal .agent{color:var(--muted);font-size:12.5px}
+  .stpill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .st-clear{background:var(--green-soft);color:#0a7a48}
+  .st-flag{background:var(--amber-soft);color:#8a5c05}
+  .st-review{background:rgba(92,107,126,.12);color:var(--muted)}
+  .recheck{font-size:12.5px;font-weight:600;color:var(--slate);background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+  .recheck:hover{background:var(--paper)}
+
+  /* BADGE */
+  .badge-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;max-width:940px;margin:0 auto}
+  .badge-copy h3{font-size:26px;letter-spacing:-.02em;margin-bottom:14px}
+  .badge-copy p{color:var(--muted);font-size:16px;margin-bottom:14px}
+  .badge-copy li{color:var(--muted);font-size:15px;margin:8px 0 8px 20px}
+  .cert{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:34px;text-align:center}
+  .cert .seal{width:74px;height:74px;margin:0 auto 16px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center}
+  .cert h4{font-size:22px;letter-spacing:-.02em}
+  .cert .cadr{font-size:15px;font-weight:600;margin:6px 0 2px}
+  .cert .cmeta{font-size:12.5px;color:var(--muted)}
+  .cert .divide{height:1px;background:var(--line);margin:18px 0}
+  .cert .ref{font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+  /* TRUST */
+  .trust{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto}
+  .tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .tcard .ti{width:40px;height:40px;border-radius:11px;background:var(--green-soft);display:grid;place-items:center;margin-bottom:14px}
+  .tcard h4{font-size:17px;letter-spacing:-.01em;margin-bottom:6px}
+  .tcard p{color:var(--muted);font-size:14px}
+  .quote{max-width:720px;margin:44px auto 0;background:var(--slate);color:#fff;border-radius:20px;padding:38px 40px;text-align:center}
+  .quote p{font-size:20px;line-height:1.5;letter-spacing:-.01em;margin-bottom:16px}
+  .quote .who{font-size:14px;color:#9fb0c6}
+
+  /* PRICING */
+  .price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:820px;margin:0 auto}
+  .plan{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:32px}
+  .plan.feature{border:2px solid var(--green);position:relative}
+  .plan .flag2{position:absolute;top:-13px;left:32px;background:var(--green);color:#04331f;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px}
+  .plan h4{font-size:18px;letter-spacing:-.01em}
+  .plan .amt{font-size:40px;font-weight:700;letter-spacing:-.03em;margin:10px 0 2px}
+  .plan .amt small{font-size:15px;font-weight:500;color:var(--muted)}
+  .plan .desc{color:var(--muted);font-size:14px;margin-bottom:18px}
+  .plan ul{list-style:none;margin-bottom:22px}
+  .plan li{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;margin:10px 0}
+  .plan li svg{flex:none;margin-top:3px}
+  .plan .btn{width:100%;justify-content:center}
+
+  /* HOW */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:30px 26px}
+  .num{width:38px;height:38px;border-radius:10px;background:var(--slate);color:#fff;display:grid;place-items:center;font-weight:700;margin-bottom:18px}
+  .card h4{font-size:19px;letter-spacing:-.02em;margin-bottom:8px}
+  .card p{color:var(--muted);font-size:15px}
+
+  /* CTA */
+  .cta{background:var(--slate);border-radius:28px;padding:60px 30px;text-align:center;color:#fff;margin:0 0 70px}
+  .cta h2{font-size:clamp(28px,4vw,44px);letter-spacing:-.03em;margin-bottom:14px}
+  .cta p{color:#9fb0c6;max-width:520px;margin:0 auto 28px;font-size:17px}
+  .cta .btn-primary{padding:15px 30px;font-size:16px}
+
+  footer{border-top:1px solid var(--line);padding:34px 0;color:var(--muted);font-size:14px}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+
+  @media(max-width:820px){
+    .nav-links{display:none}
+    .rep-grid{grid-template-columns:1fr}
+    .doc-pane{border-right:none;border-bottom:1px solid var(--line)}
+    .trust,.steps{grid-template-columns:1fr}
+    .badge-wrap,.price-grid{grid-template-columns:1fr}
+    .deal{grid-template-columns:1fr auto}
+    .deal .agent-col, .deal .st-col{display:none}
+    .rep-head{flex-direction:column;align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="9" fill="#0F1B2D"/><path d="M11 12.5h8a3.6 3.6 0 0 1 0 7.2h-4v4.3" stroke="#F7F6F2" stroke-width="2.4" stroke-linecap="round"/><path d="M13.4 17.1l2.4 2.4 4.8-5.1" stroke="#12B76A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      BrokerPass
+    </div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#desk">Deal desk</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="dashboard.html" class="btn btn-ghost">Sign in</a>
+      <a href="#pricing" class="btn btn-primary">Book a demo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="pill"><span class="dot"></span> Built for Ontario brokerages, not individual agents</div>
+    <h1>Every deal, checked<br>before it hits the <span class="clear">desk.</span></h1>
+    <p class="sub">BrokerPass reviews every agreement your agents submit against RECO, TRESA and OREA, and catches the small stuff that kills deals: missing dates, blank initials and unsigned pages. Your deal desk sees green or gets a fix list. No file slips through.</p>
+    <div class="regs">
+      <div class="reg">RECO</div>
+      <div class="reg">TRESA</div>
+      <div class="reg">OREA</div>
+      <div class="reg">Dates, initials &amp; signatures</div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="upload-stage">
+      <div class="drop" id="drop" onclick="runDemo()">
+        <div class="up-ico">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" stroke="#12B76A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="#12B76A" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 id="drop-title">Drop an agreement to see a live report</h3>
+        <p id="drop-sub">APS, buyer rep, listing agreement, amendments. PDF or scan.</p>
+        <div class="scan" id="scan"><div class="scan-fill" id="scanFill"></div></div>
+        <div class="scan-label" id="scanLabel">Checking clauses against RECO and TRESA…</div>
+        <div class="reassure">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-3z" stroke="#5C6B7E" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Encrypted in transit and at rest. Files auto-delete after 30 days. Click to run the demo.
+        </div>
+      </div>
+
+      <!-- REPORT -->
+      <div class="report" id="report">
+        <div class="rep-head">
+          <div>
+            <div class="ttl">COMPLIANCE REPORT · submitted by J. Patel</div>
+            <div class="file">APS_1420-Lakeshore-Rd.pdf</div>
+          </div>
+          <div class="badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#3d2a05" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#3d2a05"/></svg>
+            2 fixes before clear
+          </div>
+        </div>
+        <div class="rep-grid">
+          <!-- DOC PREVIEW -->
+          <div class="doc-pane">
+            <div class="doc-tabs">
+              <div class="doc-tab">p.1</div>
+              <div class="doc-tab">p.2</div>
+              <div class="doc-tab active">p.3</div>
+              <div class="doc-tab">p.4</div>
+            </div>
+            <div class="page">
+              <h5>Agreement of Purchase and Sale</h5>
+              <div class="ln l"></div><div class="ln m"></div><div class="ln l"></div>
+              <div class="ln s"></div><div class="ln m"></div><div class="ln l"></div>
+              <div class="ln m"></div><div class="ln l"></div>
+              <div class="sigrow">
+                <div class="sigbox">Seller initial</div>
+                <div class="sigbox">Buyer initial</div>
+              </div>
+              <!-- red circle over the empty buyer initial box -->
+              <div class="marker" style="right:20px;bottom:16px;width:64px;height:30px">
+                <span class="tagn">Missing</span>
+              </div>
+            </div>
+          </div>
+          <!-- FLAGS -->
+          <div class="flag-pane">
+            <div class="row flag">
+              <div class="rico flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></svg></div>
+              <div class="rtxt">
+                <strong>Buyer initials missing on page 3</strong>
+                <div class="mean">The buyer initial box at the bottom of page 3 is blank. Every page needs both parties.</div>
+                <div class="why">Unsigned or un-initialled pages can be disputed at closing.</div>
+                <div class="rmeta">
+                  <span class="rtag">SIGNATURES</span>
+                  <span class="conf">High confidence</span>
+                  <button class="fixbtn">Send back to agent</button>
+                  <button class="fixbtn soft">Add to checklist</button>
+                </div>
+              </div>
+            </div>
+            <div class="row flag">
+              <div class="rico flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></svg></div>
+              <div class="rtxt">
+                <strong>Irrevocable time is blank</strong>
+                <div class="mean">OREA Form 100, clause 2 has the date but no time entered.</div>
+                <div class="why">Without a time, the irrevocable period is unenforceable.</div>
+                <div class="rmeta">
+                  <span class="rtag">DATES</span>
+                  <span class="conf">High confidence</span>
+                  <button class="fixbtn">Request from co-op agent</button>
+                  <button class="fixbtn soft">Add to checklist</button>
+                </div>
+              </div>
+            </div>
+            <div class="row pass">
+              <div class="rico pass"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="rtxt">
+                <strong>Multiple representation disclosed</strong>
+                <div class="mean">TRESA disclosure present and acknowledged by both parties.</div>
+                <div class="rmeta"><span class="rtag">TRESA</span><span class="conf">Verified</span></div>
+              </div>
+            </div>
+            <div class="row pass">
+              <div class="rico pass"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="rtxt">
+                <strong>Trade record sheet complete</strong>
+                <div class="mean">All required RECO fields present and signed.</div>
+                <div class="rmeta"><span class="rtag">RECO</span><span class="conf">Verified</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rep-foot">
+          <div class="l">Fix the 2 flags, then re-run to clear this deal.</div>
+          <button class="btn btn-primary" onclick="clearDeal()">Re-check deal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HOW -->
+<section class="sec" id="how" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2>Three steps. That is the whole thing.</h2>
+    <p class="lead">No training day for your agents. If they can submit a file, it gets checked before it ever reaches your deal desk.</p>
+    <div class="steps">
+      <div class="card"><div class="num">1</div><h4>Agent submits the deal</h4><p>Your agent uploads the agreement and supporting forms, or it flows in straight from your existing workflow.</p></div>
+      <div class="card"><div class="num">2</div><h4>BrokerPass checks every page</h4><p>Line by line against current RECO, TRESA and OREA rules, plus every date, initial and signature on every page.</p></div>
+      <div class="card"><div class="num">3</div><h4>Your desk gets the pass or the fix list</h4><p>Green means file it. Amber shows exactly what to fix, where, and who to chase, with one click to send it back.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEAL DESK -->
+<section class="sec" id="desk" style="background:linear-gradient(180deg,#fff,transparent)">
+  <div class="wrap">
+    <div class="eyebrow">The deal desk</div>
+    <h2>One board for every deal in the office.</h2>
+    <p class="lead">Your broker of record and admin team see every submission, its status, and what is still outstanding. Fix a flag, re-check, watch it turn green.</p>
+    <div class="desk">
+      <div class="desk-top"><b>Lakeshore Realty · Deal Desk</b><span>12 open · 3 need attention</span></div>
+      <div class="deal">
+        <div><div class="addr">1420 Lakeshore Rd</div><div class="agent agent-col">J. Patel · submitted 2h ago</div></div>
+        <div class="st-col"><span class="stpill st-flag">2 fixes</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Signatures, Dates</div>
+        <button class="recheck">Re-check</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">88 Bridle Path Ave</div><div class="agent agent-col">M. Okoro · submitted today</div></div>
+        <div class="st-col"><span class="stpill st-clear">Cleared</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">All checks passed</div>
+        <button class="recheck">View pass</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">204 Elm St, Unit 7</div><div class="agent agent-col">S. Nguyen · submitted 1d ago</div></div>
+        <div class="st-col"><span class="stpill st-review">In review</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Scanning…</div>
+        <button class="recheck">Open</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">15 Rosewood Cres</div><div class="agent agent-col">J. Patel · submitted 1d ago</div></div>
+        <div class="st-col"><span class="stpill st-clear">Cleared</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Badge issued</div>
+        <button class="recheck">View pass</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BADGE -->
+<section class="sec" id="badge">
+  <div class="wrap">
+    <div class="eyebrow">The pass</div>
+    <h2>Every clean deal gets a stamped pass.</h2>
+    <p class="lead" style="margin-bottom:40px">When a deal clears, BrokerPass issues a dated certificate with a reference number your admin attaches to the file.</p>
+    <div class="badge-wrap">
+      <div class="badge-copy">
+        <h3>Proof the file was checked.</h3>
+        <p>A clean audit trail for your broker of record, and one less thing to worry about if RECO ever comes knocking.</p>
+        <ul>
+          <li>Timestamped and tied to the exact document version</li>
+          <li>Unique reference number for your records</li>
+          <li>Attaches to the deal file in one click</li>
+        </ul>
+      </div>
+      <div class="cert">
+        <div class="seal">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Deal Cleared</h4>
+        <div class="cadr">15 Rosewood Cres</div>
+        <div class="cmeta">Checked against RECO · TRESA · OREA</div>
+        <div class="divide"></div>
+        <div class="cmeta">Cleared August 13, 2026 · 4:12pm</div>
+        <div class="ref">REF BP-2026-08-4471 · Lakeshore Realty</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="sec" id="trust" style="background:linear-gradient(180deg,#fff,transparent)">
+  <div class="wrap">
+    <div class="eyebrow">Security</div>
+    <h2>Your files are the most sensitive thing you own.</h2>
+    <p class="lead">We treat them that way. BrokerPass is a compliance aid, a second set of eyes for your desk, not a replacement for your broker of record's judgement.</p>
+    <div class="trust">
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-3z" stroke="#12B76A" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+        <h4>Encrypted end to end</h4><p>Every file is encrypted in transit and at rest, and auto-deleted after 30 days unless you say otherwise.</p>
+      </div>
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="2" stroke="#12B76A" stroke-width="1.9"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#12B76A" stroke-width="1.9"/></svg></div>
+        <h4>SOC 2 aligned</h4><p>Built to SOC 2 controls with role-based access, so only your desk and the submitting agent see a file.</p>
+      </div>
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#12B76A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#12B76A" stroke-width="1.9"/></svg></div>
+        <h4>An aid, not advice</h4><p>BrokerPass flags and explains. Your broker of record makes the call. The plain-English notes tell you why each item matters.</p>
+      </div>
+    </div>
+    <div class="quote">
+      <p>“We caught three deals with missing initials in the first week. That used to be a phone call from RECO waiting to happen.”</p>
+      <div class="who">Broker of Record · GTA brokerage, 40 agents</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>Priced per brokerage. Not per headache.</h2>
+    <p class="lead">Start with a live pilot on your last 20 deals. See what BrokerPass would have caught before you commit.</p>
+    <div class="price-grid">
+      <div class="plan">
+        <h4>Office</h4>
+        <div class="amt">$299<small> / month</small></div>
+        <div class="desc">For a single office up to 25 agents.</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited deal checks</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Shared deal desk board</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Stamped pass on every clean deal</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Start a pilot</a>
+      </div>
+      <div class="plan feature">
+        <div class="flag2">Most brokerages</div>
+        <h4>Enterprise</h4>
+        <div class="amt">Custom</div>
+        <div class="desc">Multi-office franchises and networks.</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Office</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Roll-up reporting across offices</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Workflow and CRM integration</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Book a demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="wrap">
+  <section class="cta">
+    <h2>Stop guessing at the deal desk.</h2>
+    <p>Run a pilot on your last 20 deals and see exactly what BrokerPass would have caught.</p>
+    <a href="#" class="btn btn-primary">Book a demo</a>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="brand" style="font-size:17px">
+      <svg class="mark" style="width:26px;height:26px" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="9" fill="#0F1B2D"/><path d="M11 12.5h8a3.6 3.6 0 0 1 0 7.2h-4v4.3" stroke="#F7F6F2" stroke-width="2.4" stroke-linecap="round"/><path d="M13.4 17.1l2.4 2.4 4.8-5.1" stroke="#12B76A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      BrokerPass
+    </div>
+    <div>BrokerPass.ca is a compliance aid for brokerages, not legal advice. © 2026 BrokerPass</div>
+  </div>
+</footer>
+
+<script>
+  function runDemo(){
+    const drop=document.getElementById('drop'),title=document.getElementById('drop-title'),sub=document.getElementById('drop-sub');
+    const scan=document.getElementById('scan'),fill=document.getElementById('scanFill'),label=document.getElementById('scanLabel'),report=document.getElementById('report');
+    report.classList.remove('show');drop.classList.add('busy');
+    title.textContent='Reading APS_1420-Lakeshore-Rd.pdf';sub.textContent='Checking every clause and every page.';
+    scan.classList.add('on');label.classList.add('on');fill.style.width='0';
+    let p=0;const steps=['Checking clauses against RECO and TRESA…','Scanning every page for dates, initials and signatures…','Matching OREA form fields…','Building your report…'];
+    const t=setInterval(()=>{p+=4;fill.style.width=p+'%';label.textContent=steps[Math.min(steps.length-1,Math.floor(p/26))];
+      if(p>=100){clearInterval(t);setTimeout(()=>{scan.classList.remove('on');label.classList.remove('on');drop.classList.remove('busy');
+        title.textContent='Drop an agreement to see a live report';sub.textContent='APS, buyer rep, listing agreement, amendments. PDF or scan.';
+        report.classList.add('show');report.scrollIntoView({behavior:'smooth',block:'center'});},350);}},70);
+  }
+  function clearDeal(){
+    const head=document.querySelector('.rep-head');
+    const badge=document.querySelector('.rep-head .badge');
+    const foot=document.querySelector('.rep-foot');
+    const flags=document.querySelectorAll('.flag-pane .row.flag');
+    const marker=document.querySelector('.marker');
+    flags.forEach(f=>{
+      f.classList.remove('flag');f.classList.add('pass');
+      f.querySelector('.rico').classList.remove('flag');f.querySelector('.rico').classList.add('pass');
+      f.querySelector('.rico').innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const meta=f.querySelector('.rmeta');meta.querySelectorAll('.fixbtn').forEach(b=>b.remove());
+      f.querySelector('.conf').textContent='Now verified';
+      f.querySelector('.why')&&f.querySelector('.why').remove();
+    });
+    if(marker)marker.style.display='none';
+    badge.style.background='var(--green)';badge.style.color='#04331f';
+    badge.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#04331f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg> Deal cleared';
+    foot.innerHTML='<div class="l" style="color:#0a7a48;font-weight:600">Deal cleared. Stamped pass BP-2026-08-4472 issued and attached to the file.</div>';
+  }
+</script>
+</body>
+</html>

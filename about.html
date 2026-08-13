@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrokerPass — Who built this</title>
+<style>
+  :root{--slate:#0F1B2D;--slate-2:#17263C;--green:#12B76A;--green-soft:rgba(18,183,106,.12);
+    --paper:#F7F6F2;--ink:#0F1B2D;--muted:#5C6B7E;--line:rgba(15,27,45,.10);--white:#fff;--radius:16px;
+    --shadow:0 20px 50px -20px rgba(15,27,45,.35)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:0 28px}
+  .narrow{max-width:720px}
+  a{text-decoration:none;color:inherit}
+  nav{position:sticky;top:0;z-index:50;background:rgba(247,246,242,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:1160px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:-.02em}
+  .mark{width:34px;height:34px}
+  .nav-links{display:flex;gap:30px;font-size:15px;font-weight:500;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px;border:none;cursor:pointer;padding:12px 22px;border-radius:999px;transition:.18s}
+  .btn-primary{background:var(--green);color:#04331f}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(18,183,106,.6)}
+  header.hd{text-align:center;padding:74px 0 20px}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--green);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:clamp(34px,5.4vw,56px);letter-spacing:-.035em;margin-bottom:18px;line-height:1.05}
+  h1 .g{color:var(--green)}
+  .lede{color:var(--muted);font-size:19px;max-width:600px;margin:0 auto}
+  .story{padding:44px 0}
+  .story .narrow p{font-size:17.5px;margin-bottom:20px}
+  .pull{font-size:24px;font-weight:600;letter-spacing:-.02em;color:var(--slate);border-left:3px solid var(--green);padding:6px 0 6px 20px;margin:30px 0}
+  .opinion{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:24px 0;font-size:16.5px}
+  .opinion b{color:var(--green)}
+  .founders{padding:20px 0 40px}
+  .f-head{text-align:center;margin-bottom:36px}
+  .f-head h2{font-size:clamp(26px,4vw,38px);letter-spacing:-.03em}
+  .f-head p{color:var(--muted);font-size:17px;margin-top:8px}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .fcard{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--shadow)}
+  .avatar{width:66px;height:66px;border-radius:16px;background:var(--slate);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px}
+  .avatar.g{background:var(--green);color:#04331f}
+  .fcard h3{font-size:21px;letter-spacing:-.02em}
+  .fcard .role{color:var(--green);font-weight:600;font-size:14px;margin:2px 0 14px}
+  .fcard p{color:var(--muted);font-size:15px;margin-bottom:10px}
+  .tag{display:inline-block;font-size:12px;font-weight:600;color:var(--slate);background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:4px 9px;margin:3px 4px 0 0}
+  .note{background:var(--green-soft);border:1px dashed var(--green);border-radius:12px;padding:14px 16px;margin-top:14px;font-size:13.5px;color:var(--slate)}
+  .cta{background:var(--slate);border-radius:24px;padding:52px 30px;text-align:center;color:#fff;margin:50px 0 70px}
+  .cta h2{font-size:30px;letter-spacing:-.02em;margin-bottom:12px}
+  .cta p{color:#9fb0c6;margin-bottom:22px;max-width:520px;margin-left:auto;margin-right:auto}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:14px;text-align:center}
+  @media(max-width:760px){.nav-links{display:none}.fgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="brand"><svg class="mark" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="9" fill="#0F1B2D"/><path d="M11 12.5h8a3.6 3.6 0 0 1 0 7.2h-4v4.3" stroke="#F7F6F2" stroke-width="2.4" stroke-linecap="round"/><path d="M13.4 17.1l2.4 2.4 4.8-5.1" stroke="#12B76A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>BrokerPass</a>
+    <div class="nav-links"><a href="index.html#how">How it works</a><a href="index.html#desk">Deal desk</a><a href="faq.html">FAQ</a><a href="index.html#pricing">Pricing</a></div>
+    <a href="index.html#pricing" class="btn btn-primary">Book a demo</a>
+  </div>
+</nav>
+
+<header class="hd">
+  <div class="wrap">
+    <div class="eyebrow">Who built this</div>
+    <h1>We have sat at the<br>deal desk. <span class="g">That is why this exists.</span></h1>
+    <p class="lede">BrokerPass was built by two people who have spent years inside Canadian real estate, not by a software company guessing at the problem.</p>
+  </div>
+</header>
+
+<section class="story">
+  <div class="wrap narrow">
+    <p>Every brokerage runs on the same quiet stress. A deal comes in, someone has to check it, and the thing that trips it up is never the big stuff. It is a blank initial on page 3. A missing time on the irrevocable. A signature that never made it onto the amendment. Small misses that turn into a bounced file, a frustrated agent, and in the worst case a call from RECO.</p>
+
+    <div class="pull">We got tired of watching good deals get held up by things a checklist should have caught.</div>
+
+    <p>Between us we have trained thousands of Realtors, rolled out technology across brokerages and boards nationally, and watched the compliance bottleneck from every seat: the agent submitting, the admin reviewing, the Broker of Record signing off. The problem was never that people did not care. It was that catching every date, initial and signature by eye, on every page, on every deal, is not a job humans are good at.</p>
+
+    <p>So we built the tool we wished the desk had. Upload the package, get a clear report, fix what is flagged, submit clean. It does not replace the Broker of Record. It just makes sure nothing lands on their desk that should have been caught first.</p>
+
+    <div class="opinion"><b>Our opinion:</b> compliance software has spent years trying to replace human judgement. That is the wrong goal. The Broker of Record should keep the judgement. The software should just handle the tedious first pass so they can use it.</div>
+  </div>
+</section>
+
+<section class="founders">
+  <div class="wrap">
+    <div class="f-head">
+      <h2>The two of us.</h2>
+      <p>No big team, no outside agenda. Just people who know this industry from the inside.</p>
+    </div>
+    <div class="fgrid">
+
+      <div class="fcard">
+        <div class="avatar g">GM</div>
+        <h3>Gary McGowan</h3>
+        <div class="role">Co-founder · Product &amp; industry</div>
+        <p>A real estate business development leader and trainer. Gary has trained thousands of Realtors across Canada on systems, growth and technology, serves as Teranet's national REALM Ambassador driving platform adoption for brokerages coast to coast, and is Head Coach at Mike Sherrard Coaching Inc.</p>
+        <p>He built BrokerPass around how the deal desk actually works, because he has spent years helping brokerages fix exactly this bottleneck.</p>
+        <div>
+          <span class="tag">Director of Business Development</span>
+          <span class="tag">Head Coach, Mike Sherrard Coaching Inc.</span>
+          <span class="tag">Teranet REALM Ambassador</span>
+          <span class="tag">Trainer to thousands of agents</span>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="avatar">CC</div>
+        <h3>Colin Campbell</h3>
+        <div class="role">Co-founder · Broker Owner</div>
+        <p>Colin started in real estate in 2014 with one goal: build a business, not just close deals. By 2021 he was Broker Owner of one of the largest brokerages in Canada, today home to 220+ agents and growing toward 1,000.</p>
+        <p>He built that brokerage on systems, not hustle: a proven lead gen and conversion framework, weekly coaching and accountability, and a culture that rewards standards over raw production. He also runs CEO Lab, helping founders break through growth ceilings. BrokerPass is the compliance layer he wanted running underneath all of it.</p>
+        <div>
+          <span class="tag">Broker Owner</span>
+          <span class="tag">The Real Estate Blueprint</span>
+          <span class="tag">CEO Lab</span>
+          <span class="tag">Building toward 1,000 agents</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="cta">
+    <h2>Built by the desk, for the desk.</h2>
+    <p>See what BrokerPass catches on your own files. Run a pilot on your last 20 deals.</p>
+    <a href="#" class="btn btn-primary">Book a demo</a>
+  </section>
+</div>
+
+<footer>BrokerPass.ca is a compliance aid for brokerages, not legal advice. © 2026 BrokerPass</footer>
+</body>
+</html>
