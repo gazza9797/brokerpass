@@ -82,8 +82,8 @@ export function FindingsReport({
       )}
 
       {warnings.length > 0 && (
-        <Group title="Needs attention" subtitle="Fix, or your compliance department will send it back." tone="warn">
-          {warnings.map((f) => <FindingRow key={f.id} f={f} tone="warn" />)}
+        <Group title="Needs attention" subtitle="Fix, or your compliance department will send it back." tone="attention">
+          {warnings.map((f) => <FindingRow key={f.id} f={f} tone="attention" />)}
         </Group>
       )}
 
@@ -137,17 +137,17 @@ function Badge({ cleared, critical, warnings, confirms }: { cleared: boolean; cr
     confirms && `${confirms} to confirm`,
   ].filter(Boolean);
   return (
-    <span className={`rounded-full px-4 py-1.5 text-sm font-bold ${critical ? "bg-[#c43d3d] text-white" : "bg-[#F5A623] text-[#3d2a05]"}`}>
+    <span className={`rounded-full px-4 py-1.5 text-sm font-bold ${critical || warnings ? "bg-[#c43d3d] text-white" : "bg-[#F5A623] text-[#3d2a05]"}`}>
       {bits.join(" · ")}
     </span>
   );
 }
 
-function Group({ title, subtitle, tone, children }: { title: string; subtitle: string; tone: "critical" | "warn"; children: React.ReactNode }) {
+function Group({ title, subtitle, tone, children }: { title: string; subtitle: string; tone: "critical" | "attention" | "warn"; children: React.ReactNode }) {
   return (
     <section className="mt-6">
       <div className="mb-2 flex items-baseline gap-3">
-        <h3 className={`font-heading text-base font-bold ${tone === "critical" ? "text-critical" : "text-warn"}`}>{title}</h3>
+        <h3 className={`font-heading text-base font-bold ${tone === "warn" ? "text-warn" : "text-critical"}`}>{title}</h3>
         <p className="text-xs text-ink-muted">{subtitle}</p>
       </div>
       <div className="space-y-2">{children}</div>
@@ -155,12 +155,12 @@ function Group({ title, subtitle, tone, children }: { title: string; subtitle: s
   );
 }
 
-function FindingRow({ f, tone }: { f: Finding; tone: "critical" | "warn" }) {
+function FindingRow({ f, tone }: { f: Finding; tone: "critical" | "attention" }) {
   const rule = getRule(f.rule_id);
   return (
-    <article className={`rounded-xl p-4 ${tone === "critical" ? "bg-critical-soft" : "bg-warn-soft"}`}>
+    <article className={`rounded-xl p-4 ${tone === "critical" ? "border-2 border-critical bg-critical-soft" : "bg-critical-soft"}`}>
       <div className="flex items-start gap-3">
-        <span className={`mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full text-xs font-bold text-white ${tone === "critical" ? "bg-critical" : "bg-[#F5A623]"}`}>
+        <span className="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-critical text-xs font-bold text-white">
           !
         </span>
         <div className="flex-1">
