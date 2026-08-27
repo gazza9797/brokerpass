@@ -149,6 +149,12 @@ How to work:
 5. For each MANUAL rule, only decide whether it applies to this package. These become attestation checkboxes for the agent; you are not evaluating them.
 6. If the upload is clearly not a real estate deal package, fail BP-PKG-05 with high confidence and mark every other rule not_applicable.
 
+Ontario e-signature conventions (apply these before failing any signature or initial rule):
+- Witness lines on OREA forms are optional. A blank "(Witness)" line is never a finding.
+- DocuSign / Authentisign / similar stamps, typed-script signatures and timestamped e-signatures are valid signatures and initials.
+- "Confirmation of Acceptance" and "Acknowledgement" blocks are supporting sections; only flag them under the rule that specifically governs them, not as a missing party signature.
+- The spouse-consent line only matters when the form or package indicates a spouse who is not already a party.
+
 AUTO rules (evaluate each):
 ${rulesForPrompt(AUTO_RULES, true)}
 

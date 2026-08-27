@@ -12,19 +12,19 @@
       "category_name": "Package integrity",
       "bulletin": "package",
       "severity": "Critical",
-      "version": 1,
+      "version": 2,
       "mca_validate": false,
       "rule_name": "Required signatures present",
-      "requirement": "Every signature line that a form requires for the deal to be binding (buyer, seller, tenant, landlord, brokerage representative, witness where the form provides one) is signed.",
+      "requirement": "Every party signature the form requires for the deal to be binding (buyer, seller, tenant, landlord; spouse consent where the form shows a spouse is involved) is present. Witness lines are optional and never required. Electronic signatures (DocuSign, Authentisign and similar stamps or typed-script signatures with a timestamp) count as signatures.",
       "applies_when": "Any form in the package has signature lines.",
-      "detection_signal": "A signature block on a required party line is blank, or a party named in the form has no signature anywhere on it.",
+      "detection_signal": "A required PARTY signature line is blank, or a party named in the form has not signed. Ignore blank Witness lines entirely. Ignore blank Acknowledgement / receipt-of-copy blocks unless the form is an APS and neither side acknowledged.",
       "detection_strategy": "AI-judgment",
       "finding_template": "A required signature is missing.",
       "confirm_text": null,
       "fix_guidance": "Obtain the missing signature(s) from the named party before submitting.",
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
-      "notes": "Report each missing signature with the form, page and party."
+      "notes": "Report each missing party signature with the form, page and party. Never report blank witness lines; they are optional on OREA forms and are always blank on e-signed packages."
     },
     {
       "rule_id": "BP-PKG-02",
