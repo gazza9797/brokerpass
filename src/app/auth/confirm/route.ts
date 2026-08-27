@@ -7,8 +7,15 @@ import { createClient } from "@/lib/supabase/server";
  * flow, this works from any browser or device, not just the one that
  * requested the email.
  */
+function publicOrigin(requestUrl: string): string {
+  // On Netlify the function sees its internal deploy URL, not the custom
+  // domain. Always redirect on the configured public URL.
+  return process.env.NEXT_PUBLIC_APP_URL || new URL(requestUrl).origin;
+}
+
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = publicOrigin(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/app";
