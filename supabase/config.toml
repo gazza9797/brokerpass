@@ -1,0 +1,5 @@
+project_id = "gzyciclnctdnwkvaxuse"
+
+[functions.scan-deal]
+# The app authenticates with the service-role key itself; skip Supabase's JWT check.
+verify_jwt = false

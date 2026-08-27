@@ -51,3 +51,8 @@ h1, h2, h3, h4 {
 /* Pass-green accent (buttons) matches the marketing site */
 :root { --bp-accent: #12B76A; --bp-accent-ink: #04331f; }
 @theme inline { --color-accent: var(--bp-accent); --color-accent-ink: var(--bp-accent-ink); }
+
+@keyframes scan {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}

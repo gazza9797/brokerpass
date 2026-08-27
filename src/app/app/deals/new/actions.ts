@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/current-user";
 import { DEAL_TYPES, DOCUMENT_TTL_MINUTES } from "@/lib/deal-types";
+import { requestScan } from "@/lib/scan";
 
 const MAX_BYTES = 25 * 1024 * 1024;
 
@@ -98,6 +99,14 @@ export async function createDeal(formData: FormData) {
 
   if (docError) {
     redirect("/app/deals/new?error=" + encodeURIComponent(docError.message));
+  }
+
+  const scan = await requestScan(deal.id);
+  if (!scan.ok) {
+    await supabase
+      .from("deals")
+      .update({ status: "needs_attention", scan_error: scan.error ?? "Scanner unavailable" })
+      .eq("id", deal.id);
   }
 
   redirect(`/app/deals/${deal.id}`);
