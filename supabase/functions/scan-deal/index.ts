@@ -36,18 +36,6 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
 const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-5";
 
-const DEAL_TYPE_LABELS: Record<string, string> = {
-  aps_residential: "Agreement of Purchase and Sale (Residential, OREA Form 100)",
-  aps_condo: "Agreement of Purchase and Sale (Condominium, OREA Form 101)",
-  listing_seller: "Listing Agreement / Seller Representation (OREA Form 200)",
-  buyer_rep: "Buyer Representation Agreement (OREA Form 300)",
-  lease_residential: "Agreement to Lease (Residential, OREA Form 400)",
-  amendment: "Amendment to Agreement (OREA Form 120)",
-  waiver_nof: "Waiver / Notice of Fulfillment of Condition (OREA Form 123/124)",
-  mutual_release: "Mutual Release (OREA Form 122)",
-  assignment: "Assignment of Agreement (OREA Form 145/150)",
-};
-
 // ---------------------------------------------------------------------------
 // Tool schema Claude must fill in
 // ---------------------------------------------------------------------------
@@ -57,8 +45,13 @@ const REPORT_TOOL = {
     "Report the result of checking a real estate deal package against the BrokerPass ruleset.",
   input_schema: {
     type: "object",
-    required: ["package_summary", "forms_found", "auto_results", "manual_applicability"],
+    required: ["package_summary", "forms_found", "detected_deal_type", "auto_results", "manual_applicability"],
     properties: {
+      detected_deal_type: {
+        type: "string",
+        enum: ["aps_residential", "aps_condo", "listing_seller", "buyer_rep", "lease_residential", "amendment", "waiver_nof", "mutual_release", "assignment", "other"],
+        description: "The deal type of the principal form in the package.",
+      },
       package_summary: {
         type: "string",
         description:
@@ -99,7 +92,8 @@ const REPORT_TOOL = {
               type: "string",
               description: "Required when failed. What you saw: quote the field label / text, or describe the blank.",
             },
-            page: { type: "integer", description: "1-based PDF page where the issue is. Required when failed." },
+            page: { type: "integer", description: "1-based page within the file where the issue is. Required when failed." },
+            file: { type: "integer", description: "Which file (1-based, matching 'File N' in the prompt). Required when failed and the package has more than one file." },
           },
         },
       },
@@ -135,18 +129,19 @@ function rulesForPrompt(rules: Rule[], includeDetection: boolean) {
     .join("\n");
 }
 
-function buildPrompt(dealType: string, address: string | null) {
+function buildPrompt(address: string | null, fileNames: string[]) {
   return `You are the BrokerPass compliance scanner for Ontario real estate brokerages. You are reading a deal package a salesperson is about to submit to their brokerage's compliance department. Your job is to check the package against the ruleset below and report exactly what you find. You are a second set of eyes, not a lawyer: report facts about the documents, never legal conclusions.
 
-Submitted deal type: ${DEAL_TYPE_LABELS[dealType] ?? dealType}
-Property address entered by the submitter: ${address ?? "(not entered)"}
+Deal label entered by the submitter (a nickname only, never compare it to the documents): ${address ?? "(none)"}
+The package is ${fileNames.length} file${fileNames.length === 1 ? "" : "s"}: ${fileNames.map((n, i) => `File ${i + 1} = ${n}`).join("; ")}. Treat them together as one deal package. When you report a page, say which file it is in (e.g. "File 2, page 3").
 
 How to work:
 1. Read every page. Note which OREA/brokerage forms are present and their page ranges.
 2. For each AUTO rule, decide passed / failed / not_applicable. "not_applicable" means the rule's applies_when does not describe this package (for example, a representation-agreement rule when no representation agreement is in the package). Do not invent forms that are not there.
 3. When a rule fails, give the page number, quote or describe the evidence, and write a finding an agent can act on. Be specific: form, field, party.
 4. Be strict on blanks: an empty signature line, initial box, date or time field is a failure for the rule that governs it. Be careful on judgment calls: if you cannot tell from the document, choose passed with confidence "low" rather than inventing a failure.
-5. For each MANUAL rule, only decide whether it applies to this package. These become attestation checkboxes for the agent; you are not evaluating them.
+5. For each MANUAL rule, decide whether THIS PACKAGE contains a concrete trigger for it: a specific form, clause, checkbox, dollar amount, party situation or fact that makes the rule live for this deal (a deposit clause, a multiple-representation form, a seller direction on offers, a registrant named as a party, a stigma or latent-defect reference, etc.). General duties that apply to every trade regardless of the documents (confidentiality, material facts in general, RECO guide in general) are NOT triggered by the package: mark them applies=false. Aim for few, relevant attestations, not a checklist.
+7. Set detected_deal_type from the principal form in the package.
 6. If the upload is clearly not a real estate deal package, fail BP-PKG-05 with high confidence and mark every other rule not_applicable.
 
 Ontario e-signature conventions (apply these before failing any signature or initial rule):
@@ -169,6 +164,7 @@ Call the report_findings tool with one entry for every rule in both lists.`;
 // ---------------------------------------------------------------------------
 interface ReportInput {
   package_summary: string;
+  detected_deal_type: string;
   forms_found: { form: string; pages: string }[];
   auto_results: {
     rule_id: string;
@@ -177,11 +173,12 @@ interface ReportInput {
     finding?: string;
     evidence?: string;
     page?: number;
+    file?: number;
   }[];
   manual_applicability: { rule_id: string; applies: boolean; note?: string }[];
 }
 
-async function askClaude(pdfBase64: string, prompt: string): Promise<ReportInput> {
+async function askClaude(pdfs: { name: string; base64: string }[], prompt: string): Promise<ReportInput> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -198,11 +195,11 @@ async function askClaude(pdfBase64: string, prompt: string): Promise<ReportInput
         {
           role: "user",
           content: [
-            {
+            ...pdfs.map((p, i) => ({
               type: "document",
-              source: { type: "base64", media_type: "application/pdf", data: pdfBase64 },
-              title: "Deal package",
-            },
+              source: { type: "base64", media_type: "application/pdf", data: p.base64 },
+              title: `File ${i + 1}: ${p.name}`,
+            })),
             { type: "text", text: prompt },
           ],
         },
@@ -249,27 +246,27 @@ async function runScan(dealId: string) {
 
     await db.from("deals").update({ status: "scanning", scan_error: null }).eq("id", dealId);
 
-    const { data: doc } = await db
+    const { data: docs } = await db
       .from("documents")
       .select("storage_path, file_name")
       .eq("deal_id", dealId)
       .is("purged_at", null)
-      .order("uploaded_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (!doc) return fail("No document on file. The PDF may have been auto-deleted; upload it again to re-check.");
+      .order("uploaded_at", { ascending: true });
+    if (!docs?.length) return fail("No documents on file. The PDFs may have been auto-deleted; upload them again to re-check.");
 
-    const { data: blob, error: dlErr } = await db.storage.from("deal-documents").download(doc.storage_path);
-    if (dlErr || !blob) return fail(`could not read the PDF: ${dlErr?.message ?? "unknown"}`);
-
-    const bytes = new Uint8Array(await blob.arrayBuffer());
-    let binary = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) {
-      binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    const pdfs: { name: string; base64: string }[] = [];
+    for (const doc of docs) {
+      const { data: blob, error: dlErr } = await db.storage.from("deal-documents").download(doc.storage_path);
+      if (dlErr || !blob) return fail(`could not read ${doc.file_name}: ${dlErr?.message ?? "unknown"}`);
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      }
+      pdfs.push({ name: doc.file_name, base64: btoa(binary) });
     }
-    const pdfBase64 = btoa(binary);
 
-    const report = await askClaude(pdfBase64, buildPrompt(deal.deal_type, deal.property_address));
+    const report = await askClaude(pdfs, buildPrompt(deal.property_address, pdfs.map((p) => p.name)));
 
     // ---- Persist -----------------------------------------------------------
     const byId = new Map(RULES.map((r) => [r.rule_id, r]));
@@ -295,7 +292,7 @@ async function runScan(dealId: string) {
         severity: rule.severity.toLowerCase(), outcome,
         confidence: r.confidence,
         finding_text: r.finding ?? rule.finding_template,
-        evidence: r.evidence ?? null,
+        evidence: r.file && pdfs.length > 1 ? `File ${r.file}: ${r.evidence ?? ""}`.trim() : (r.evidence ?? null),
         page: r.page ?? null,
         fix_guidance: rule.fix_guidance,
       });
@@ -336,7 +333,10 @@ async function runScan(dealId: string) {
       if (fErr) return fail(`could not save findings: ${fErr.message}`);
     }
 
-    await db.from("deals").update({ last_scanned_at: new Date().toISOString(), scan_error: null }).eq("id", dealId);
+    await db
+      .from("deals")
+      .update({ last_scanned_at: new Date().toISOString(), scan_error: null, deal_type: report.detected_deal_type || "other" })
+      .eq("id", dealId);
     await db.rpc("recompute_deal_status", { p_deal_id: dealId });
     console.log(`scan ${dealId}: ${rulesRun} run, ${passed} passed, ${warnings} warn, ${critical} crit, ${confirms} confirm in ${Date.now() - started}ms`);
   } catch (e) {

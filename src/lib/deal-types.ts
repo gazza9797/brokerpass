@@ -1,7 +1,7 @@
 /**
  * The nine v1 deal types. One deal = one package = one scan.
- * Keys are stored in deals.deal_type; labels are what agents see.
- * Adjust labels here only; the rule engine keys off the id.
+ * The scanner detects the type from the principal form and writes it to
+ * deals.deal_type ("pending" until the first scan, "other" if unrecognised).
  */
 export const DEAL_TYPES = [
   { id: "aps_residential", label: "Agreement of Purchase and Sale (Residential)" },
@@ -18,6 +18,8 @@ export const DEAL_TYPES = [
 export type DealTypeId = (typeof DEAL_TYPES)[number]["id"];
 
 export function dealTypeLabel(id: string): string {
+  if (id === "pending") return "Detecting…";
+  if (id === "other") return "Other / mixed package";
   return DEAL_TYPES.find((d) => d.id === id)?.label ?? id;
 }
 

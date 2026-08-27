@@ -1,113 +1,90 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/current-user";
-import { DEAL_TYPES, DOCUMENT_TTL_MINUTES } from "@/lib/deal-types";
+import { DOCUMENT_TTL_MINUTES } from "@/lib/deal-types";
 import { requestScan } from "@/lib/scan";
 
-const MAX_BYTES = 25 * 1024 * 1024;
+export interface StartDealResult {
+  ok: true;
+  dealId: string;
+  brokerageId: string;
+}
+export interface ActionError {
+  ok: false;
+  error: string;
+}
 
-export async function createDeal(formData: FormData) {
+/**
+ * Step 1 of an upload: create the deal row so the browser has a folder
+ * to upload into. Files go browser → Supabase Storage directly (RLS
+ * enforced), which avoids the ~6 MB request cap on server functions.
+ */
+export async function startDeal(input: {
+  name: string;
+  agentId?: string;
+}): Promise<StartDealResult | ActionError> {
   const { supabase, user, profile, isAdmin, isActive } = await requireUser();
+  if (!profile?.brokerage_id || !isActive) return { ok: false, error: "Your account is not active yet." };
 
-  if (!profile?.brokerage_id || !isActive) {
-    redirect("/app/deals/new?error=" + encodeURIComponent("Your account is not active yet."));
-  }
+  const name = input.name.trim();
+  if (!name) return { ok: false, error: "Give the deal a name (the address, any way you like)." };
 
-  const dealType = String(formData.get("deal_type") ?? "");
-  const address = String(formData.get("property_address") ?? "").trim();
-  const onBehalfOf = String(formData.get("agent_id") ?? "").trim();
-  const file = formData.get("file");
+  const agentId = isAdmin && input.agentId ? input.agentId : user.id;
 
-  if (!DEAL_TYPES.some((d) => d.id === dealType)) {
-    redirect("/app/deals/new?error=" + encodeURIComponent("Pick a deal type."));
-  }
-  if (!(file instanceof File) || file.size === 0) {
-    redirect("/app/deals/new?error=" + encodeURIComponent("Attach the deal package as a PDF."));
-  }
-  if (file.type !== "application/pdf") {
-    redirect("/app/deals/new?error=" + encodeURIComponent("Only PDF files are accepted."));
-  }
-  if (file.size > MAX_BYTES) {
-    redirect("/app/deals/new?error=" + encodeURIComponent("File is over 25 MB."));
-  }
-
-  // Agents can only submit for themselves. Admins may pick an agent.
-  const agentId = isAdmin && onBehalfOf ? onBehalfOf : user.id;
-
-  // Backstop against double submits: same agent + file name + address
-  // inside the last two minutes is treated as the same upload.
-  const twoMinutesAgo = new Date(Date.now() - 2 * 60_000).toISOString();
-  const { data: recent } = await supabase
-    .from("documents")
-    .select("deal_id, deals!inner(agent_id, property_address)")
-    .eq("file_name", file.name)
-    .eq("deals.agent_id", agentId)
-    .gte("uploaded_at", twoMinutesAgo)
-    .limit(5);
-  const dup = recent?.find((r) => {
-    const d = r.deals as unknown as { property_address: string | null };
-    return (d.property_address ?? "") === (address || "");
-  });
-  if (dup) {
-    redirect(`/app/deals/${dup.deal_id}`);
-  }
-
-  const { data: deal, error: dealError } = await supabase
+  const { data: deal, error } = await supabase
     .from("deals")
     .insert({
       brokerage_id: profile.brokerage_id,
       agent_id: agentId,
       submitted_by: user.id,
-      deal_type: dealType,
-      property_address: address || null,
-      status: "scanning",
+      deal_type: "pending",
+      property_address: name,
+      status: "draft",
     })
     .select("id")
     .single();
 
-  if (dealError || !deal) {
-    redirect(
-      "/app/deals/new?error=" +
-        encodeURIComponent(dealError?.message ?? "Could not create the deal."),
-    );
-  }
+  if (error || !deal) return { ok: false, error: error?.message ?? "Could not create the deal." };
+  return { ok: true, dealId: deal.id, brokerageId: profile.brokerage_id };
+}
 
-  const safeName = file.name.replace(/[^\w.\-]+/g, "_").slice(-120);
-  const storagePath = `${profile.brokerage_id}/${deal.id}/${Date.now()}-${safeName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from("deal-documents")
-    .upload(storagePath, file, { contentType: "application/pdf", upsert: false });
-
-  if (uploadError) {
-    await supabase.from("deals").delete().eq("id", deal.id);
-    redirect("/app/deals/new?error=" + encodeURIComponent("Upload failed: " + uploadError.message));
-  }
+/** Step 2: the browser has uploaded the files; record them and start the scan. */
+export async function finishDeal(input: {
+  dealId: string;
+  files: { path: string; name: string; size: number }[];
+}): Promise<ActionError | { ok: true }> {
+  const { supabase, user, profile } = await requireUser();
+  if (!profile?.brokerage_id) return { ok: false, error: "Not active." };
+  if (!input.files.length) return { ok: false, error: "No files were uploaded." };
 
   const expiresAt = new Date(Date.now() + DOCUMENT_TTL_MINUTES * 60_000).toISOString();
-  const { error: docError } = await supabase.from("documents").insert({
-    deal_id: deal.id,
-    brokerage_id: profile.brokerage_id,
-    uploaded_by: user.id,
-    storage_path: storagePath,
-    file_name: file.name,
-    file_size: file.size,
-    mime_type: file.type,
-    expires_at: expiresAt,
-  });
+  const { error } = await supabase.from("documents").insert(
+    input.files.map((f) => ({
+      deal_id: input.dealId,
+      brokerage_id: profile.brokerage_id,
+      uploaded_by: user.id,
+      storage_path: f.path,
+      file_name: f.name,
+      file_size: f.size,
+      mime_type: "application/pdf",
+      expires_at: expiresAt,
+    })),
+  );
+  if (error) return { ok: false, error: error.message };
 
-  if (docError) {
-    redirect("/app/deals/new?error=" + encodeURIComponent(docError.message));
-  }
-
-  const scan = await requestScan(deal.id);
+  await supabase.from("deals").update({ status: "scanning" }).eq("id", input.dealId);
+  const scan = await requestScan(input.dealId);
   if (!scan.ok) {
     await supabase
       .from("deals")
       .update({ status: "needs_attention", scan_error: scan.error ?? "Scanner unavailable" })
-      .eq("id", deal.id);
+      .eq("id", input.dealId);
   }
+  return { ok: true };
+}
 
-  redirect(`/app/deals/${deal.id}`);
+/** Abandon a deal whose upload failed part-way. */
+export async function abandonDeal(dealId: string) {
+  const { supabase } = await requireUser();
+  await supabase.from("deals").delete().eq("id", dealId);
 }

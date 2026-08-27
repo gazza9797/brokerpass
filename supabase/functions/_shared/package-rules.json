@@ -2,8 +2,8 @@
   "meta": {
     "product": "BrokerPass",
     "set": "package-integrity",
-    "version": "v1",
-    "notes": "BrokerPass's own document-completeness checks. Not derived from a RECO bulletin; these cover the 'dates, initials and signatures' promise. Every rule is AI-judgment against the uploaded PDF."
+    "version": "v2",
+    "notes": "BrokerPass's own document-completeness checks. Not derived from a RECO bulletin; these cover the 'dates, initials and signatures' promise. Every rule is AI-judgment against the uploaded PDF. v2: removed BP-PKG-07 (deal type is detected by the scanner, not selected)."
   },
   "rules": [
     {
@@ -125,26 +125,6 @@
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
       "notes": "Quote both versions."
-    },
-    {
-      "rule_id": "BP-PKG-07",
-      "category": 0,
-      "category_name": "Package integrity",
-      "bulletin": "package",
-      "severity": "Warning",
-      "version": 1,
-      "mca_validate": true,
-      "rule_name": "Package matches the selected deal type",
-      "requirement": "The forms in the package correspond to the deal type the submitter selected (e.g. an Agreement of Purchase and Sale for an APS deal, a Form 300 for a buyer representation deal).",
-      "applies_when": "Always.",
-      "detection_signal": "The principal form in the package is a different type than the selected deal type.",
-      "detection_strategy": "AI-judgment",
-      "finding_template": "The uploaded forms do not match the selected deal type.",
-      "confirm_text": null,
-      "fix_guidance": "Re-submit under the correct deal type, or upload the right package.",
-      "source": "BrokerPass package-integrity check",
-      "pinpoint": "n/a",
-      "notes": "Only fire when the mismatch is clear."
     }
   ]
 }
