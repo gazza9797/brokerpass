@@ -52,19 +52,19 @@
       "category_name": "Package integrity",
       "bulletin": "package",
       "severity": "Critical",
-      "version": 1,
+      "version": 2,
       "mca_validate": false,
       "rule_name": "Irrevocable date and time complete",
-      "requirement": "An offer's irrevocability clause states both a date and a time (with a.m./p.m.).",
+      "requirement": "An offer's irrevocability clause states a date and a time, with some deliberate mark designating a.m. or p.m. Any mark counts: an X, check, circle, or striking out one of the two options - this is standard Ontario practice. Only flag when the date or time is blank, or when there is NO mark of any kind on or near the (a.m./p.m.) designation.",
       "applies_when": "The package contains an offer, counter-offer or amendment with an irrevocable clause.",
-      "detection_signal": "The irrevocable date or time field is blank, or the time lacks a.m./p.m.",
+      "detection_signal": "Blank irrevocable date or time, or a time with the (a.m./p.m.) area completely untouched. An X or any other mark at the designation is sufficient; never flag a marked designation as ambiguous.",
       "detection_strategy": "AI-judgment",
       "finding_template": "The irrevocable date or time is blank or incomplete.",
       "confirm_text": null,
       "fix_guidance": "Complete the irrevocable date and time before presenting or accepting.",
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
-      "notes": "Without a time the irrevocable period is unenforceable."
+      "notes": "Without a time the irrevocable period is unenforceable. An X near (a.m./p.m.) is a valid designation, not a finding."
     },
     {
       "rule_id": "BP-PKG-04",
