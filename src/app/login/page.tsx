@@ -4,9 +4,9 @@ import { login } from "./actions";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; sent?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; sent?: string; next?: string; signedout?: string }>;
 }) {
-  const { error, sent, next } = await searchParams;
+  const { error, sent, next, signedout } = await searchParams;
 
   return (
     <main className="flex flex-1 items-center justify-center px-6">
@@ -16,6 +16,9 @@ export default async function LoginPage({
           We&apos;ll email you a one-time sign-in link.
         </p>
 
+        {signedout && (
+          <p className="mt-4 rounded-md bg-pass-soft p-3 text-sm text-pass">You are signed out.</p>
+        )}
         {sent ? (
           <p className="mt-6 rounded-md bg-pass-soft p-3 text-sm text-pass">
             Check your inbox. The link expires in 1 hour.

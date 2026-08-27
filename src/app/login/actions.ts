@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,6 +25,14 @@ export async function login(formData: FormData) {
 
 export async function logout() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  await supabase.auth.signOut({ scope: "local" });
+
+  // Belt and braces: drop any Supabase auth cookies the SDK left behind.
+  const jar = await cookies();
+  for (const c of jar.getAll()) {
+    if (c.name.startsWith("sb-")) jar.delete(c.name);
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/login?signedout=1");
 }

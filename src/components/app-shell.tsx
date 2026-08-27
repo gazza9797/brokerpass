@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { logout } from "@/app/login/actions";
+import { SubmitButton } from "@/components/submit-button";
 import { ROLE_LABELS, type Profile } from "@/lib/types";
 
 function Mark() {
@@ -58,9 +59,9 @@ export function AppShell({
               </p>
             </div>
             <form action={logout}>
-              <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/10">
+              <SubmitButton pendingText="Signing out…" className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/10">
                 Sign out
-              </button>
+              </SubmitButton>
             </form>
           </div>
         </div>
