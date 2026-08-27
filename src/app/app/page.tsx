@@ -73,7 +73,7 @@ export default async function DealDesk() {
         <Kpi label="Cleared" value={counts.cleared} tone="pass" />
       </div>
 
-      <div className="mt-8 rounded-lg border border-line bg-surface">
+      <div className="mt-8 overflow-x-auto rounded-lg border border-line bg-surface">
         <table className="w-full text-sm">
           <thead className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-muted">
             <tr>
@@ -102,7 +102,7 @@ export default async function DealDesk() {
                   </td>
                   <td className="px-4 py-3 text-ink-muted whitespace-nowrap" title={dealTypeLabel(d.deal_type)}>{dealTypeShort(d.deal_type)}</td>
                   {isAdmin && (
-                    <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
+                    <td className="max-w-[12rem] truncate px-4 py-3 text-ink-muted" title={d.agent_email ?? ""}>
                       {d.agent_name || d.agent_email}
                     </td>
                   )}
