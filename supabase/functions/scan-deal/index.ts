@@ -34,7 +34,7 @@ const MANUAL_RULES = RULES.filter((r) => r.detection_strategy.startsWith("Manual
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANTHROPIC_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
-const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-5";
+const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-5";
 
 const DEAL_TYPE_LABELS: Record<string, string> = {
   aps_residential: "Agreement of Purchase and Sale (Residential, OREA Form 100)",
