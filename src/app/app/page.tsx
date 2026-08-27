@@ -113,7 +113,7 @@ export default async function DealDesk() {
                     {d.live_documents > 0 ? `${d.live_documents} on file` : "Purged"}
                   </td>
                   <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
-                    {new Date(d.created_at).toLocaleDateString("en-CA")}
+                    {new Date(d.created_at).toLocaleDateString("en-CA", { timeZone: "America/Toronto" })}
                   </td>
                   <td className="px-4 py-3 text-right whitespace-nowrap">
                     {(isAdmin || d.agent_id === user.id) && (

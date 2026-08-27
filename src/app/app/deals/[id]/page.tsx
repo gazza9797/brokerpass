@@ -206,13 +206,13 @@ export default async function DealPage({
                 <p className="font-medium text-ink">{d.file_name}</p>
                 <p className="text-xs text-ink-muted">
                   {(d.file_size / 1024 / 1024).toFixed(1)} MB · uploaded{" "}
-                  {new Date(d.uploaded_at).toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" })}
+                  {new Date(d.uploaded_at).toLocaleTimeString("en-CA", { timeZone: "America/Toronto", hour: "numeric", minute: "2-digit" })}
                 </p>
               </div>
               <div className="flex items-center gap-4 text-xs">
                 {d.purged_at ? (
                   <span className="rounded-full bg-pass-soft px-2.5 py-0.5 font-medium text-pass">
-                    Deleted {new Date(d.purged_at).toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" })}
+                    Deleted {new Date(d.purged_at).toLocaleTimeString("en-CA", { timeZone: "America/Toronto", hour: "numeric", minute: "2-digit" })}
                   </span>
                 ) : (
                   <>

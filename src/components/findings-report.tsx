@@ -118,7 +118,7 @@ export function FindingsReport({
 
       <p className="mt-4 text-xs text-ink-muted">
         Ruleset {scan.ruleset_version} · scanned{" "}
-        {new Date(scan.created_at).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })} · BrokerPass
+        {new Date(scan.created_at).toLocaleString("en-CA", { timeZone: "America/Toronto", dateStyle: "medium", timeStyle: "short" })} · BrokerPass
         is a compliance aid, not legal advice. Your Broker of Record makes the call.
       </p>
     </div>
@@ -204,7 +204,7 @@ function ConfirmRow({ f, dealId, canResolve }: { f: Finding; dealId: string; can
           {resolved ? (
             <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
               {f.confirmed_at
-                ? `Confirmed ${new Date(f.confirmed_at).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}`
+                ? `Confirmed ${new Date(f.confirmed_at).toLocaleString("en-CA", { timeZone: "America/Toronto", dateStyle: "medium", timeStyle: "short" })}`
                 : `Dismissed: "${f.dismiss_reason}"`}
               {canResolve && (
                 <form action={reopenFinding}>
