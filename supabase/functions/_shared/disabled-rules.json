@@ -1,0 +1,8 @@
+{
+  "notes": "Rule ids the scanner never reports (v1, all brokerages). Generic every-trade attestations Gary removed after pilot feedback. Per-brokerage overrides come later via mca_validate.",
+  "disabled": [
+    "CAT7-7.3-01",
+    "CAT2-2.5-01",
+    "CAT2-2.1-01"
+  ]
+}

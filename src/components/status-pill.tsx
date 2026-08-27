@@ -3,7 +3,7 @@ import type { DealStatus } from "@/lib/types";
 const STYLES: Record<DealStatus, { label: string; cls: string }> = {
   draft: { label: "Draft", cls: "bg-line text-ink-muted" },
   scanning: { label: "Scanning", cls: "bg-line text-ink" },
-  needs_attention: { label: "Needs attention", cls: "bg-warn-soft text-warn" },
+  needs_attention: { label: "Needs attention", cls: "bg-critical-soft text-critical" },
   cleared: { label: "Cleared", cls: "bg-pass-soft text-pass" },
   submitted: { label: "Submitted", cls: "bg-pass-soft text-pass" },
 };

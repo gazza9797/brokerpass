@@ -10,6 +10,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import ruleset from "../_shared/ruleset-v1.json" with { type: "json" };
 import packageRules from "../_shared/package-rules.json" with { type: "json" };
+import disabled from "../_shared/disabled-rules.json" with { type: "json" };
 
 type Severity = "Critical" | "Warning" | "Confirm";
 interface Rule {
@@ -26,7 +27,8 @@ interface Rule {
   fix_guidance: string;
 }
 
-const RULES: Rule[] = [...packageRules.rules, ...ruleset.rules] as Rule[];
+const DISABLED = new Set<string>(disabled.disabled);
+const RULES: Rule[] = ([...packageRules.rules, ...ruleset.rules] as Rule[]).filter((r) => !DISABLED.has(r.rule_id));
 const RULESET_VERSION = `${ruleset.meta.version}+pkg-${packageRules.meta.version}`;
 const AUTO_RULES = RULES.filter((r) => !r.detection_strategy.startsWith("Manual"));
 const MANUAL_RULES = RULES.filter((r) => r.detection_strategy.startsWith("Manual"));

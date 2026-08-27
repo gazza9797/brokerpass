@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
+import { DeleteDealButton } from "@/components/delete-deal-button";
 import { StatusPill } from "@/components/status-pill";
 import { requireUser } from "@/lib/current-user";
 import { dealTypeLabel } from "@/lib/deal-types";
@@ -8,6 +9,7 @@ import type { DealStatus } from "@/lib/types";
 
 interface DealRow {
   id: string;
+  agent_id: string;
   deal_type: string;
   property_address: string | null;
   status: DealStatus;
@@ -22,7 +24,7 @@ interface DealRow {
 export const dynamic = "force-dynamic";
 
 export default async function DealDesk() {
-  const { supabase, profile, brokerageName, isAdmin, isActive } = await requireUser();
+  const { supabase, user, profile, brokerageName, isAdmin, isActive } = await requireUser();
 
   // Lazy purge: keeps the 60-minute promise honest even without a scheduler.
   await purgeExpiredDocuments();
@@ -67,7 +69,7 @@ export default async function DealDesk() {
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         <Kpi label="Open deals" value={counts.total} />
-        <Kpi label="Needs attention" value={counts.attention} tone="warn" />
+        <Kpi label="Needs attention" value={counts.attention} tone="critical" />
         <Kpi label="Cleared" value={counts.cleared} tone="pass" />
       </div>
 
@@ -81,6 +83,7 @@ export default async function DealDesk() {
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Files</th>
               <th className="px-4 py-3">Uploaded</th>
+              <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -112,11 +115,16 @@ export default async function DealDesk() {
                   <td className="px-4 py-3 text-ink-muted">
                     {new Date(d.created_at).toLocaleDateString("en-CA")}
                   </td>
+                  <td className="px-2 py-3 text-right">
+                    {(isAdmin || d.agent_id === user.id) && (
+                      <DeleteDealButton dealId={d.id} name={d.property_address ?? "this deal"} />
+                    )}
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-ink-muted">
+                <td colSpan={7} className="px-4 py-10 text-center text-ink-muted">
                   No deals yet. Upload the first one.
                 </td>
               </tr>
@@ -135,10 +143,10 @@ function Kpi({
 }: {
   label: string;
   value: number;
-  tone?: "warn" | "pass";
+  tone?: "critical" | "pass";
 }) {
   const color =
-    tone === "warn" ? "text-warn" : tone === "pass" ? "text-pass" : "text-ink";
+    tone === "critical" ? "text-critical" : tone === "pass" ? "text-pass" : "text-ink";
   return (
     <div className="rounded-lg border border-line bg-surface p-4">
       <p className="text-xs uppercase tracking-wide text-ink-muted">{label}</p>
