@@ -132,19 +132,19 @@
       "category_name": "Package integrity",
       "bulletin": "package",
       "severity": "Warning",
-      "version": 1,
+      "version": 2,
       "mca_validate": true,
       "rule_name": "Handwritten changes initialed by all parties",
-      "requirement": "Every handwritten change to a term of the agreement (a struck-through date, price, name or clause replaced with a new value) carries the initials of the buyer(s) and seller(s) beside the change (tenant(s) and landlord(s) on a lease). Only the principal parties' initials are required; brokerage or witness initials are not. An un-initialed alteration to a contract term is not validly agreed.",
+      "requirement": "Every handwritten change to a term of the agreement carries the initials of the buyer(s) and seller(s) (tenant/landlord on a lease). Initials count wherever they are placed in relation to the change: directly beside it, above or below it, or in the LEFT or RIGHT MARGIN at the level of the changed line or paragraph - margin initials are the most common Ontario practice. Only the printed per-page initial boxes at the FOOT of the page do not count as initialing a specific change.",
       "applies_when": "Any form in the package shows a handwritten alteration to a printed or previously entered term.",
-      "detection_signal": "A struck-through or overwritten value with no initials beside it, or initialed by only one side (e.g. sellers initialed a date change but the buyer did not). Check each alteration individually; initials at the foot of the page do not count as initialing a specific change.",
+      "detection_signal": "For each alteration, scan the full width of the page at that line's level, including both margins, for initials from each side. Flag only when, after checking beside, above, below, and both margins, one or both sides' initials are absent for that change.",
       "detection_strategy": "AI-judgment",
       "finding_template": "A handwritten change is not initialed by all parties.",
       "confirm_text": null,
       "fix_guidance": "Have the buyer(s) and seller(s) initial directly beside each handwritten change, or redo the change by amendment.",
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
-      "notes": "Name the change, the page, and which side's initials are missing. Principal parties only: buyer(s)/seller(s) (or tenant/landlord). This applies to changes on the face of the form; a proper Form 120 amendment is the alternative route."
+      "notes": "Name the change, the page, and which side's initials are missing. Margin initials at the level of the change count. Foot-of-page initial boxes do not."
     }
   ]
 }
