@@ -26,8 +26,10 @@ export function UploadForm({
 
   function pick(list: FileList | null) {
     if (!list) return;
-    const next: FileState[] = [];
+    setError(null);
+    const next: FileState[] = [...files];
     for (const f of Array.from(list)) {
+      if (next.some((x) => x.file.name === f.name && x.file.size === f.size)) continue;
       if (f.type !== "application/pdf") {
         setError(`${f.name}: only PDF files are accepted.`);
         continue;
@@ -40,6 +42,10 @@ export function UploadForm({
     }
     setFiles(next.slice(0, MAX_FILES));
     if (next.length > MAX_FILES) setError(`Up to ${MAX_FILES} files per deal.`);
+  }
+
+  function remove(i: number) {
+    setFiles((s) => s.filter((_, j) => j !== i));
   }
 
   async function submit(e: React.FormEvent) {
@@ -124,16 +130,22 @@ export function UploadForm({
 
       <label className="block text-sm font-medium text-ink">
         Deal package (PDFs, up to {MAX_FILES} files, 25 MB each)
+        <span className="ml-2 inline-block rounded-md border border-line bg-white px-2 py-1 text-xs font-medium text-ink">
+          {files.length ? "Add more files" : "Choose files"}
+        </span>
         <input
           type="file"
           accept="application/pdf"
           multiple
           disabled={busy}
-          onChange={(e) => pick(e.target.files)}
-          className="mt-1 block w-full text-sm text-ink-muted file:mr-3 file:rounded-md file:border file:border-line file:bg-white file:px-3 file:py-1.5 file:text-sm file:text-ink"
+          onChange={(e) => {
+            pick(e.target.files);
+            e.target.value = "";
+          }}
+          className="sr-only"
         />
         <p className="mt-1 text-xs text-ink-muted">
-          Select every PDF for this deal at once (APS, schedules, Form 320, deposit receipt…). They are checked as one package.
+          Add every PDF for this deal (APS, schedules, Form 320, deposit receipt…). Pick several at once with Cmd-click, or add them one at a time. They are checked as one package.
         </p>
       </label>
 
@@ -142,9 +154,13 @@ export function UploadForm({
           {files.map((f, i) => (
             <li key={i} className="flex items-center justify-between px-3 py-2">
               <span className="truncate text-ink">{f.file.name}</span>
-              <span className="ml-3 flex-none text-xs text-ink-muted">
+              <span className="ml-3 flex flex-none items-center gap-3 text-xs text-ink-muted">
                 {(f.file.size / 1024 / 1024).toFixed(1)} MB ·{" "}
-                {f.status === "queued" && "ready"}
+                {f.status === "queued" && (
+                  <button type="button" onClick={() => remove(i)} disabled={busy} className="underline underline-offset-2 hover:text-ink">
+                    remove
+                  </button>
+                )}
                 {f.status === "uploading" && <span className="text-ink">uploading…</span>}
                 {f.status === "done" && <span className="text-pass">uploaded</span>}
                 {f.status === "failed" && <span className="text-critical">failed</span>}
