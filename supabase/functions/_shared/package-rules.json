@@ -2,8 +2,8 @@
   "meta": {
     "product": "BrokerPass",
     "set": "package-integrity",
-    "version": "v2",
-    "notes": "BrokerPass's own document-completeness checks. Not derived from a RECO bulletin; these cover the 'dates, initials and signatures' promise. Every rule is AI-judgment against the uploaded PDF. v2: removed BP-PKG-07 (deal type is detected by the scanner, not selected)."
+    "version": "v3",
+    "notes": "BrokerPass's own document-completeness checks. Not derived from a RECO bulletin; these cover the 'dates, initials and signatures' promise. Every rule is AI-judgment against the uploaded PDF. v2: removed BP-PKG-07 (deal type is detected by the scanner, not selected). v3: added BP-PKG-08 (handwritten changes must be initialed by all parties)."
   },
   "rules": [
     {
@@ -32,10 +32,10 @@
       "category_name": "Package integrity",
       "bulletin": "package",
       "severity": "Warning",
-      "version": 2,
+      "version": 3,
       "mca_validate": true,
       "rule_name": "Initials present on every page that requires them",
-      "requirement": "Where a form provides initial boxes at the foot of each page, every page carries the initials of every party.",
+      "requirement": "On pages that provide per-page initial boxes, every party's box is initialed. Pages without initial boxes (signature pages, schedules, receipts) do not require initials and are never a finding.",
       "applies_when": "Any form in the package provides per-page initial boxes.",
       "detection_signal": "Perform the page-by-page initials audit: on each page with initial boxes, check every party's box individually. One or more boxes empty on any page = failed. An empty oval with no marks inside is empty even when the other party's box on the same page is initialed.",
       "detection_strategy": "AI-judgment",
@@ -72,19 +72,19 @@
       "category_name": "Package integrity",
       "bulletin": "package",
       "severity": "Warning",
-      "version": 1,
+      "version": 2,
       "mca_validate": true,
       "rule_name": "Key dates completed and consistent",
-      "requirement": "Offer date, acceptance date, completion/closing date, condition deadlines and any possession or occupancy dates are filled in and do not contradict each other (e.g. a condition deadline after closing).",
+      "requirement": "Required dates (offer, acceptance, completion/closing, condition deadlines, possession) are filled in and do not genuinely contradict each other. Judge the final corrected values; whether a correction is properly initialed is BP-PKG-08's job, not this rule's.",
       "applies_when": "Any dated agreement is in the package.",
-      "detection_signal": "A required date is blank, or dates are mutually inconsistent.",
+      "detection_signal": "A required date left blank, or final date values that genuinely contradict (e.g. a condition deadline after completion). Not: corrections, amendments, or dates that merely changed.",
       "detection_strategy": "AI-judgment",
       "finding_template": "A key date is blank or inconsistent.",
       "confirm_text": null,
       "fix_guidance": "Fill in the missing date, or correct the sequence so every deadline falls in a sensible order.",
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
-      "notes": "Name the field and page."
+      "notes": "Name the field and page. Never flag a package just for having handwritten or amended dates."
     },
     {
       "rule_id": "BP-PKG-05",
@@ -125,6 +125,26 @@
       "source": "BrokerPass package-integrity check",
       "pinpoint": "n/a",
       "notes": "Quote both versions."
+    },
+    {
+      "rule_id": "BP-PKG-08",
+      "category": 0,
+      "category_name": "Package integrity",
+      "bulletin": "package",
+      "severity": "Warning",
+      "version": 1,
+      "mca_validate": true,
+      "rule_name": "Handwritten changes initialed by all parties",
+      "requirement": "Every handwritten change to a term of the agreement (a struck-through date, price, name or clause replaced with a new value) carries the initials of the buyer(s) and seller(s) beside the change (tenant(s) and landlord(s) on a lease). Only the principal parties' initials are required; brokerage or witness initials are not. An un-initialed alteration to a contract term is not validly agreed.",
+      "applies_when": "Any form in the package shows a handwritten alteration to a printed or previously entered term.",
+      "detection_signal": "A struck-through or overwritten value with no initials beside it, or initialed by only one side (e.g. sellers initialed a date change but the buyer did not). Check each alteration individually; initials at the foot of the page do not count as initialing a specific change.",
+      "detection_strategy": "AI-judgment",
+      "finding_template": "A handwritten change is not initialed by all parties.",
+      "confirm_text": null,
+      "fix_guidance": "Have the buyer(s) and seller(s) initial directly beside each handwritten change, or redo the change by amendment.",
+      "source": "BrokerPass package-integrity check",
+      "pinpoint": "n/a",
+      "notes": "Name the change, the page, and which side's initials are missing. Principal parties only: buyer(s)/seller(s) (or tenant/landlord). This applies to changes on the face of the form; a proper Form 120 amendment is the alternative route."
     }
   ]
 }
