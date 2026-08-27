@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
 import { DeleteDealButton } from "@/components/delete-deal-button";
 import { StatusPill } from "@/components/status-pill";
+import { NamePrompt } from "@/components/team-controls";
 import { requireUser } from "@/lib/current-user";
 import { dealTypeLabel, dealTypeShort } from "@/lib/deal-types";
 import { purgeExpiredDocuments } from "@/lib/purge";
@@ -60,12 +61,18 @@ export default async function DealDesk() {
         )}
       </div>
 
-      {!isActive && (
+      {!isActive && profile?.status === "deactivated" && (
+        <p className="mt-6 rounded-md bg-critical-soft p-4 text-sm text-critical">
+          Your account has been deactivated by your brokerage. Contact your Broker of Record.
+        </p>
+      )}
+      {!isActive && profile?.status !== "deactivated" && (
         <p className="mt-6 rounded-md bg-warn-soft p-4 text-sm text-warn">
           Your account is waiting for Broker of Record approval. You can look
           around, but uploads are off until you are activated.
         </p>
       )}
+      {profile && !profile.full_name && <NamePrompt />}
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         <Kpi label="Open deals" value={counts.total} />

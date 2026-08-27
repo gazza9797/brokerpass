@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { logout } from "@/app/login/actions";
 import { SubmitButton } from "@/components/submit-button";
-import { ROLE_LABELS, type Profile } from "@/lib/types";
+import { ADMIN_ROLES, ROLE_LABELS, type Profile } from "@/lib/types";
 
 function Mark() {
   return (
@@ -49,6 +49,11 @@ export function AppShell({
               <Link href="/app/deals/new" className="hover:text-white">
                 New deal
               </Link>
+              {profile && ADMIN_ROLES.includes(profile.role) && profile.status === "active" && (
+                <Link href="/app/team" className="hover:text-white">
+                  Team
+                </Link>
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-5 text-sm">
