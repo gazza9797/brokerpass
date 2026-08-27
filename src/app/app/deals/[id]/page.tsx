@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { ExpiryCountdown } from "@/components/expiry-countdown";
 import { FindingsReport, type Finding, type ScanSummary } from "@/components/findings-report";
+import { PassCard, type Pass } from "@/components/pass-card";
 import { ScanPoller } from "@/components/scan-poller";
 import { StatusPill } from "@/components/status-pill";
 import { SubmitButton } from "@/components/submit-button";
@@ -79,6 +80,13 @@ export default async function DealPage({
   ]);
 
   const scan = scans?.[0] ?? null;
+  const { data: pass } = await supabase
+    .from("passes")
+    .select("ref, issued_at, scan_id, rules_run")
+    .eq("deal_id", id)
+    .order("issued_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<Pass>();
   const { data: findings } = scan
     ? await supabase
         .from("findings")
@@ -159,7 +167,20 @@ export default async function DealPage({
             )}
           </div>
         ) : scan ? (
-          <FindingsReport scan={scan} findings={findings ?? []} dealId={deal.id} canResolve={canResolve} />
+          <>
+            {pass && deal.status === "cleared" && (
+              <PassCard
+                pass={pass}
+                dealId={deal.id}
+                dealName={deal.property_address ?? "Deal"}
+                brokerage={brokerageName ?? ""}
+                superseded={pass.scan_id !== scan.id}
+              />
+            )}
+            <div className={pass && deal.status === "cleared" ? "mt-6" : ""}>
+              <FindingsReport scan={scan} findings={findings ?? []} dealId={deal.id} canResolve={canResolve} />
+            </div>
+          </>
         ) : (
           <div className="rounded-lg border border-line bg-surface p-6 text-sm text-ink-muted">
             No check has run on this deal yet.
