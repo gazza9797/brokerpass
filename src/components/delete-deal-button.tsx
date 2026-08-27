@@ -19,15 +19,14 @@ export function DeleteDealButton({ dealId, name }: { dealId: string; name: strin
     );
   }
   return (
-    <span className="inline-flex items-center gap-2 text-xs">
-      <span className="text-ink-muted">Delete &ldquo;{name}&rdquo;?</span>
+    <span className="inline-flex flex-col items-end gap-1 text-xs" title={`Delete "${name}"`}>
       <button
         type="button"
         disabled={pending}
         onClick={() => start(() => deleteDeal(dealId))}
         className="rounded-md bg-critical px-2 py-1 font-semibold text-white disabled:opacity-60"
       >
-        {pending ? "…" : "Yes, delete"}
+        {pending ? "Deleting…" : "Yes, delete"}
       </button>
       <button type="button" onClick={() => setArmed(false)} className="text-ink-muted hover:underline">
         Cancel

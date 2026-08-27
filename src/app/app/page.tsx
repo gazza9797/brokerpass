@@ -100,9 +100,9 @@ export default async function DealDesk() {
                       </p>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-ink-muted">{dealTypeLabel(d.deal_type)}</td>
+                  <td className="min-w-[15rem] px-4 py-3 text-ink-muted">{dealTypeLabel(d.deal_type)}</td>
                   {isAdmin && (
-                    <td className="px-4 py-3 text-ink-muted">
+                    <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
                       {d.agent_name || d.agent_email}
                     </td>
                   )}
