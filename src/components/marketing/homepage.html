@@ -1,0 +1,303 @@
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="9" fill="#0F1B2D"/><path d="M11 12.5h8a3.6 3.6 0 0 1 0 7.2h-4v4.3" stroke="#F7F6F2" stroke-width="2.4" stroke-linecap="round"/><path d="M13.4 17.1l2.4 2.4 4.8-5.1" stroke="#12B76A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      BrokerPass
+    </div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#desk">Deal desk</a>
+      <a href="#trust">Security</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <a href="/login" class="btn btn-ghost">Sign in</a>
+      <a href="mailto:homes@garyamcgowan.com?subject=BrokerPass%20demo" class="btn btn-primary">Book a demo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="pill"><span class="dot"></span> Built for Ontario brokerages, not individual agents</div>
+    <h1>Every deal, checked<br>before it hits the <span class="clear">desk.</span></h1>
+    <p class="sub">BrokerPass reviews every agreement your agents submit against RECO, TRESA and OREA, and catches the small stuff that kills deals: missing dates, blank initials and unsigned pages. Your deal desk sees green or gets a fix list. No file slips through.</p>
+    <div class="regs">
+      <div class="reg">RECO</div>
+      <div class="reg">TRESA</div>
+      <div class="reg">OREA</div>
+      <div class="reg">Dates, initials &amp; signatures</div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="upload-stage">
+      <div class="drop" id="drop" data-action="runDemo">
+        <div class="up-ico">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" stroke="#12B76A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="#12B76A" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </div>
+        <h3 id="drop-title">Drop an agreement to see a live report</h3>
+        <p id="drop-sub">APS, buyer rep, listing agreement, amendments. PDF or scan.</p>
+        <div class="scan" id="scan"><div class="scan-fill" id="scanFill"></div></div>
+        <div class="scan-label" id="scanLabel">Checking clauses against RECO and TRESA…</div>
+        <div class="reassure">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-3z" stroke="#5C6B7E" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Encrypted in transit and at rest. Files auto-delete 60 minutes after upload. Click to run the demo.
+        </div>
+      </div>
+
+      <!-- REPORT -->
+      <div class="report" id="report">
+        <div class="rep-head">
+          <div>
+            <div class="ttl">COMPLIANCE REPORT · submitted by J. Patel</div>
+            <div class="file">APS_1420-Lakeshore-Rd.pdf</div>
+          </div>
+          <div class="badge">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#3d2a05" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#3d2a05"/></svg>
+            2 fixes before clear
+          </div>
+        </div>
+        <div class="rep-grid">
+          <!-- DOC PREVIEW -->
+          <div class="doc-pane">
+            <div class="doc-tabs">
+              <div class="doc-tab">p.1</div>
+              <div class="doc-tab">p.2</div>
+              <div class="doc-tab active">p.3</div>
+              <div class="doc-tab">p.4</div>
+            </div>
+            <div class="page">
+              <h5>Agreement of Purchase and Sale</h5>
+              <div class="ln l"></div><div class="ln m"></div><div class="ln l"></div>
+              <div class="ln s"></div><div class="ln m"></div><div class="ln l"></div>
+              <div class="ln m"></div><div class="ln l"></div>
+              <div class="sigrow">
+                <div class="sigbox">Seller initial</div>
+                <div class="sigbox">Buyer initial</div>
+              </div>
+              <!-- red circle over the empty buyer initial box -->
+              <div class="marker" style="right:20px;bottom:16px;width:64px;height:30px">
+                <span class="tagn">Missing</span>
+              </div>
+            </div>
+          </div>
+          <!-- FLAGS -->
+          <div class="flag-pane">
+            <div class="row flag">
+              <div class="rico flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></svg></div>
+              <div class="rtxt">
+                <strong>Buyer initials missing on page 3</strong>
+                <div class="mean">The buyer initial box at the bottom of page 3 is blank. Every page needs both parties.</div>
+                <div class="why">Unsigned or un-initialled pages can be disputed at closing.</div>
+                <div class="rmeta">
+                  <span class="rtag">SIGNATURES</span>
+                  <span class="conf">High confidence</span>
+                  <button class="fixbtn">Send back to agent</button>
+                  <button class="fixbtn soft">Add to checklist</button>
+                </div>
+              </div>
+            </div>
+            <div class="row flag">
+              <div class="rico flag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 8v5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></svg></div>
+              <div class="rtxt">
+                <strong>Irrevocable time is blank</strong>
+                <div class="mean">OREA Form 100, clause 2 has the date but no time entered.</div>
+                <div class="why">Without a time, the irrevocable period is unenforceable.</div>
+                <div class="rmeta">
+                  <span class="rtag">DATES</span>
+                  <span class="conf">High confidence</span>
+                  <button class="fixbtn">Request from co-op agent</button>
+                  <button class="fixbtn soft">Add to checklist</button>
+                </div>
+              </div>
+            </div>
+            <div class="row pass">
+              <div class="rico pass"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="rtxt">
+                <strong>Multiple representation disclosed</strong>
+                <div class="mean">TRESA disclosure present and acknowledged by both parties.</div>
+                <div class="rmeta"><span class="rtag">TRESA</span><span class="conf">Verified</span></div>
+              </div>
+            </div>
+            <div class="row pass">
+              <div class="rico pass"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="rtxt">
+                <strong>Trade record sheet complete</strong>
+                <div class="mean">All required RECO fields present and signed.</div>
+                <div class="rmeta"><span class="rtag">RECO</span><span class="conf">Verified</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rep-foot">
+          <div class="l">Fix the 2 flags, then re-run to clear this deal.</div>
+          <button class="btn btn-primary" data-action="clearDeal">Re-check deal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HOW -->
+<section class="sec" id="how" style="padding-top:20px">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2>Three steps. That is the whole thing.</h2>
+    <p class="lead">No training day for your agents. If they can submit a file, it gets checked before it ever reaches your deal desk.</p>
+    <div class="steps">
+      <div class="card"><div class="num">1</div><h4>Agent submits the deal</h4><p>Your agent uploads the agreement and supporting forms, or it flows in straight from your existing workflow.</p></div>
+      <div class="card"><div class="num">2</div><h4>BrokerPass checks every page</h4><p>Line by line against current RECO, TRESA and OREA rules, plus every date, initial and signature on every page.</p></div>
+      <div class="card"><div class="num">3</div><h4>Your desk gets the pass or the fix list</h4><p>Green means file it. Amber shows exactly what to fix, where, and who to chase, with one click to send it back.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEAL DESK -->
+<section class="sec" id="desk" style="background:linear-gradient(180deg,#fff,transparent)">
+  <div class="wrap">
+    <div class="eyebrow">The deal desk</div>
+    <h2>One board for every deal in the office.</h2>
+    <p class="lead">Your broker of record and admin team see every submission, its status, and what is still outstanding. Fix a flag, re-check, watch it turn green.</p>
+    <div class="desk">
+      <div class="desk-top"><b>Lakeshore Realty · Deal Desk</b><span>12 open · 3 need attention</span></div>
+      <div class="deal">
+        <div><div class="addr">1420 Lakeshore Rd</div><div class="agent agent-col">J. Patel · submitted 2h ago</div></div>
+        <div class="st-col"><span class="stpill st-flag">2 fixes</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Signatures, Dates</div>
+        <button class="recheck">Re-check</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">88 Bridle Path Ave</div><div class="agent agent-col">M. Okoro · submitted today</div></div>
+        <div class="st-col"><span class="stpill st-clear">Cleared</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">All checks passed</div>
+        <button class="recheck">View pass</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">204 Elm St, Unit 7</div><div class="agent agent-col">S. Nguyen · submitted 1d ago</div></div>
+        <div class="st-col"><span class="stpill st-review">In review</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Scanning…</div>
+        <button class="recheck">Open</button>
+      </div>
+      <div class="deal">
+        <div><div class="addr">15 Rosewood Cres</div><div class="agent agent-col">J. Patel · submitted 1d ago</div></div>
+        <div class="st-col"><span class="stpill st-clear">Cleared</span></div>
+        <div class="st-col agent-col" style="color:var(--muted);font-size:12.5px">Badge issued</div>
+        <button class="recheck">View pass</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BADGE -->
+<section class="sec" id="badge">
+  <div class="wrap">
+    <div class="eyebrow">The pass</div>
+    <h2>Every clean deal gets a stamped pass.</h2>
+    <p class="lead" style="margin-bottom:40px">When a deal clears, BrokerPass issues a dated certificate with a reference number your admin attaches to the file.</p>
+    <div class="badge-wrap">
+      <div class="badge-copy">
+        <h3>Proof the file was checked.</h3>
+        <p>A clean audit trail for your broker of record, and one less thing to worry about if RECO ever comes knocking.</p>
+        <ul>
+          <li>Timestamped and tied to the exact document version</li>
+          <li>Unique reference number for your records</li>
+          <li>Attaches to the deal file in one click</li>
+        </ul>
+      </div>
+      <div class="cert">
+        <div class="seal">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h4>Deal Cleared</h4>
+        <div class="cadr">15 Rosewood Cres</div>
+        <div class="cmeta">Checked against RECO · TRESA · OREA</div>
+        <div class="divide"></div>
+        <div class="cmeta">Cleared August 13, 2026 · 4:12pm</div>
+        <div class="ref">REF BP-2026-08-4471 · Lakeshore Realty</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="sec" id="trust" style="background:linear-gradient(180deg,#fff,transparent)">
+  <div class="wrap">
+    <div class="eyebrow">Security</div>
+    <h2>Your files are the most sensitive thing you own.</h2>
+    <p class="lead">We treat them that way. BrokerPass is a compliance aid, a second set of eyes for your desk, not a replacement for your broker of record's judgement.</p>
+    <div class="trust">
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.4-3 8-7 10-4-2-7-5.6-7-10V6l7-3z" stroke="#12B76A" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+        <h4>Encrypted end to end</h4><p>Every file is encrypted in transit and at rest, and deleted from our servers 60 minutes after upload, every time.</p>
+      </div>
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="2" stroke="#12B76A" stroke-width="1.9"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#12B76A" stroke-width="1.9"/></svg></div>
+        <h4>SOC 2 aligned</h4><p>Built to SOC 2 controls with role-based access, so only your desk and the submitting agent see a file.</p>
+      </div>
+      <div class="tcard">
+        <div class="ti"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="#12B76A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="#12B76A" stroke-width="1.9"/></svg></div>
+        <h4>An aid, not advice</h4><p>BrokerPass flags and explains. Your broker of record makes the call. The plain-English notes tell you why each item matters.</p>
+      </div>
+    </div>
+    <div class="quote">
+      <p>“We caught three deals with missing initials in the first week. That used to be a phone call from RECO waiting to happen.”</p>
+      <div class="who">Broker of Record · GTA brokerage, 40 agents</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="sec" id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">Pricing</div>
+    <h2>Priced per brokerage. Not per headache.</h2>
+    <p class="lead">Start with a live pilot on your last 20 deals. See what BrokerPass would have caught before you commit.</p>
+    <div class="price-grid">
+      <div class="plan">
+        <h4>Office</h4>
+        <div class="amt">$299<small> / month</small></div>
+        <div class="desc">For a single office up to 25 agents.</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited deal checks</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Shared deal desk board</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Stamped pass on every clean deal</li>
+        </ul>
+        <a href="mailto:homes@garyamcgowan.com?subject=BrokerPass%20pilot" class="btn btn-ghost">Start a pilot</a>
+      </div>
+      <div class="plan feature">
+        <div class="flag2">Most brokerages</div>
+        <h4>Enterprise</h4>
+        <div class="amt">Custom</div>
+        <div class="desc">Multi-office franchises and networks.</div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Everything in Office</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Roll-up reporting across offices</li>
+          <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#12B76A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Workflow and CRM integration</li>
+        </ul>
+        <a href="mailto:homes@garyamcgowan.com?subject=BrokerPass%20demo" class="btn btn-primary">Book a demo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="wrap">
+  <section class="cta">
+    <h2>Stop guessing at the deal desk.</h2>
+    <p>Run a pilot on your last 20 deals and see exactly what BrokerPass would have caught.</p>
+    <a href="mailto:homes@garyamcgowan.com?subject=BrokerPass%20demo" class="btn btn-primary">Book a demo</a>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="brand" style="font-size:17px">
+      <svg class="mark" style="width:26px;height:26px" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="9" fill="#0F1B2D"/><path d="M11 12.5h8a3.6 3.6 0 0 1 0 7.2h-4v4.3" stroke="#F7F6F2" stroke-width="2.4" stroke-linecap="round"/><path d="M13.4 17.1l2.4 2.4 4.8-5.1" stroke="#12B76A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      BrokerPass
+    </div>
+    <div>BrokerPass.ca is a compliance aid for brokerages, not legal advice. © 2026 BrokerPass</div>
+  </div>
+</footer>

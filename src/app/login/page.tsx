@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/submit-button";
 import { login } from "./actions";
 
 export default async function LoginPage({
@@ -38,12 +39,12 @@ export default async function LoginPage({
                 {error}
               </p>
             )}
-            <button
-              type="submit"
-              className="w-full rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+            <SubmitButton
+              pendingText="Sending…"
+              className="w-full rounded-full bg-accent px-4 py-2.5 text-sm font-semibold text-accent-ink hover:opacity-90"
             >
               Send sign-in link
-            </button>
+            </SubmitButton>
           </form>
         )}
       </div>

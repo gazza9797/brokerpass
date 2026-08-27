@@ -3,16 +3,16 @@
 /* BrokerPass brand tokens
    green = cleared, amber = warning, red = critical */
 :root {
-  --bp-slate-900: #1b2430;
+  --bp-slate-900: #0F1B2D;
   --bp-slate-700: #334155;
-  --bp-slate-500: #64748b;
-  --bp-slate-200: #e2e8f0;
-  --bp-offwhite: #faf8f5;
+  --bp-slate-500: #5C6B7E;
+  --bp-slate-200: #e3e6ea;
+  --bp-offwhite: #F7F6F2;
   --bp-surface: #ffffff;
-  --bp-green: #1f8a5b;
-  --bp-green-soft: #e3f3ea;
-  --bp-amber: #d48a12;
-  --bp-amber-soft: #fbf0d9;
+  --bp-green: #0a7a48;
+  --bp-green-soft: rgba(18,183,106,.14);
+  --bp-amber: #8a5c05;
+  --bp-amber-soft: rgba(245,166,35,.18);
   --bp-red: #c43d3d;
   --bp-red-soft: #f9e3e3;
 
@@ -47,3 +47,7 @@ h1, h2, h3, h4 {
   font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
   letter-spacing: -0.01em;
 }
+
+/* Pass-green accent (buttons) matches the marketing site */
+:root { --bp-accent: #12B76A; --bp-accent-ink: #04331f; }
+@theme inline { --color-accent: var(--bp-accent); --color-accent-ink: var(--bp-accent-ink); }
