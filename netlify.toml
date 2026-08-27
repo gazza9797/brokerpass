@@ -1,4 +1,6 @@
-# BrokerPass static site — no build step, serve the repo root as-is.
 [build]
-  publish = "."
-  command = ""
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

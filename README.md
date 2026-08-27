@@ -1,43 +1,50 @@
-# BrokerPass.ca — Marketing site + product mockups
+# BrokerPass
 
-Static HTML prototype. No build step, no dependencies. Every page is a self-contained file.
+Upload the deal. Get the pass.
 
-## Pages
-- `index.html` — homepage (interactive upload-to-report demo)
-- `faq.html` — FAQ
-- `about.html` — About / who built this
-- `dashboard.html` — logged-in Broker of Record dashboard
-- `team-roles.html` — Team & Roles / access model
+Pre-submission compliance checks (RECO, TRESA, OREA) for Ontario brokerages.
 
-The navigation is wired: the marketing pages link to each other, "Sign in" opens the dashboard, and the app sidebar moves between Dashboard and Settings. The logo returns to the homepage.
+## Stack
 
-## Put it on GitHub
+Next.js (App Router, TypeScript, Tailwind) on Netlify. Supabase (Toronto) for auth, database and document storage, with Row Level Security enforcing the four-role model. Anthropic API for the rule engine. Resend for transactional email.
 
-**Option A — GitHub Desktop (easiest, no command line)**
-1. Open GitHub Desktop, File → New Repository, or drag this folder in.
-2. Name it `brokerpass-site`, choose this folder as the location.
-3. Publish repository (keep it private if you want).
+## Local setup
 
-**Option B — GitHub website (no git at all)**
-1. Go to github.com, click New repository, name it `brokerpass-site`, create it.
-2. On the repo page, "uploading an existing file", drag every file from this folder in, commit.
+1. `npm install`
+2. Create a Supabase project (region: Canada Central / Toronto).
+3. In the Supabase SQL editor, run `supabase/migrations/0001_foundation.sql`, then `supabase/seed.sql`.
+4. Supabase -> Authentication -> URL Configuration: set Site URL to `http://localhost:3000` and add `http://localhost:3000/auth/callback` to Redirect URLs.
+5. Copy `.env.example` to `.env.local` and fill in the Supabase URL and anon key.
+6. `npm run dev`, open http://localhost:3000, sign in with any `@pilot.test` address (Supabase's built-in mailer works for dev; check Auth -> Logs if the email doesn't arrive).
+7. Promote yourself to Broker of Record in the SQL editor:
+   `update public.profiles set role = 'broker_of_record', status = 'active' where email = 'you@pilot.test';`
 
-**Option C — command line**
+## Roles
+
+| Role | Sees | Can |
+| --- | --- | --- |
+| Broker of Record | whole brokerage | everything, incl. billing and users |
+| Alternate BOR | whole brokerage | review, clear, attest, invite users |
+| Compliance Officer | whole brokerage | review, clear, send back (no attestation, no users) |
+| Agent | own deals only | submit own deals, fix flags |
+
+Admin roles can submit on behalf of an agent. The deal lives in the agent's file; `submitted_by` records who uploaded it.
+
+Departed agents are set to `status = 'deactivated'`, never deleted, so their deals stay in the compliance record.
+
+## Layout
+
 ```
-cd brokerpass-site
-git init
-git add .
-git commit -m "BrokerPass site + mockups"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/brokerpass-site.git
-git push -u origin main
+src/app/            routes (/, /login, /auth/callback, /app)
+src/lib/supabase/   browser, server and middleware clients
+src/lib/types.ts    TS mirror of the DB enums and rows
+supabase/           migrations and seed
 ```
 
-## Connect Netlify
-1. netlify.com → Add new site → Import an existing project → GitHub.
-2. Pick the `brokerpass-site` repo.
-3. Build command: leave blank. Publish directory: leave as the root (`.`).
-4. Deploy. You get a `something.netlify.app` link. Rename it under Site settings → Domain.
-5. Every push to `main` now auto-deploys.
+## Next steps
 
-Point a `brokerpass.ca` subdomain at it later from Netlify → Domain settings when you are ready.
+- Deal upload + storage bucket (60-minute auto-delete)
+- Rule engine (ruleset v1, 8 categories)
+- Broker of Record dashboard
+- Team & Roles screen
+- Google / Microsoft OAuth and bulk invite
