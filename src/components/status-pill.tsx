@@ -12,7 +12,7 @@ export function StatusPill({ status }: { status: DealStatus }) {
   const s = STYLES[status] ?? STYLES.draft;
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${s.cls}`}
+      className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold ${s.cls}`}
     >
       {s.label}
     </span>

@@ -80,17 +80,17 @@ export default async function DealDesk() {
               <th className="px-4 py-3">Property</th>
               <th className="px-4 py-3">Deal type</th>
               {isAdmin && <th className="px-4 py-3">Agent</th>}
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Files</th>
-              <th className="px-4 py-3">Uploaded</th>
+              <th className="px-4 py-3 text-center">Status</th>
+              <th className="px-4 py-3 text-center">Files</th>
+              <th className="px-4 py-3 whitespace-nowrap">Uploaded</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {deals?.length ? (
               deals.map((d) => (
-                <tr key={d.id} className="border-b border-line last:border-0 hover:bg-background">
-                  <td className="px-4 py-3">
+                <tr key={d.id} className="border-b border-line align-middle last:border-0 hover:bg-background">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <Link href={`/app/deals/${d.id}`} className="font-medium text-ink hover:underline">
                       {d.property_address ?? "No address"}
                     </Link>
@@ -106,16 +106,16 @@ export default async function DealDesk() {
                       {d.agent_name || d.agent_email}
                     </td>
                   )}
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <StatusPill status={d.status} />
                   </td>
-                  <td className="px-4 py-3 text-ink-muted">
+                  <td className="px-4 py-3 text-center text-ink-muted whitespace-nowrap">
                     {d.live_documents > 0 ? `${d.live_documents} on file` : "Purged"}
                   </td>
-                  <td className="px-4 py-3 text-ink-muted">
+                  <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
                     {new Date(d.created_at).toLocaleDateString("en-CA")}
                   </td>
-                  <td className="px-2 py-3 text-right">
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
                     {(isAdmin || d.agent_id === user.id) && (
                       <DeleteDealButton dealId={d.id} name={d.property_address ?? "this deal"} />
                     )}
