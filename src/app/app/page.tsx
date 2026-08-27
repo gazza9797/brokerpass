@@ -3,7 +3,7 @@ import { AppShell } from "@/components/app-shell";
 import { DeleteDealButton } from "@/components/delete-deal-button";
 import { StatusPill } from "@/components/status-pill";
 import { requireUser } from "@/lib/current-user";
-import { dealTypeLabel } from "@/lib/deal-types";
+import { dealTypeLabel, dealTypeShort } from "@/lib/deal-types";
 import { purgeExpiredDocuments } from "@/lib/purge";
 import type { DealStatus } from "@/lib/types";
 
@@ -73,7 +73,7 @@ export default async function DealDesk() {
         <Kpi label="Cleared" value={counts.cleared} tone="pass" />
       </div>
 
-      <div className="mt-8 overflow-x-auto rounded-lg border border-line bg-surface">
+      <div className="mt-8 rounded-lg border border-line bg-surface">
         <table className="w-full text-sm">
           <thead className="border-b border-line text-left text-xs uppercase tracking-wide text-ink-muted">
             <tr>
@@ -90,7 +90,7 @@ export default async function DealDesk() {
             {deals?.length ? (
               deals.map((d) => (
                 <tr key={d.id} className="border-b border-line align-middle last:border-0 hover:bg-background">
-                  <td className="px-4 py-3 whitespace-nowrap">
+                  <td className="px-4 py-3">
                     <Link href={`/app/deals/${d.id}`} className="font-medium text-ink hover:underline">
                       {d.property_address ?? "No address"}
                     </Link>
@@ -100,7 +100,7 @@ export default async function DealDesk() {
                       </p>
                     )}
                   </td>
-                  <td className="min-w-[15rem] px-4 py-3 text-ink-muted">{dealTypeLabel(d.deal_type)}</td>
+                  <td className="px-4 py-3 text-ink-muted whitespace-nowrap" title={dealTypeLabel(d.deal_type)}>{dealTypeShort(d.deal_type)}</td>
                   {isAdmin && (
                     <td className="px-4 py-3 text-ink-muted whitespace-nowrap">
                       {d.agent_name || d.agent_email}
