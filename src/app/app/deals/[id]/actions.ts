@@ -68,3 +68,69 @@ export async function recheckDeal(formData: FormData) {
   revalidatePath(`/app/deals/${dealId}`);
   redirect(`/app/deals/${dealId}`);
 }
+
+/**
+ * Record corrected files the browser has already uploaded to this deal's
+ * storage folder. replace=true retires the current live files first
+ * (removed from storage, stamped purged) so the re-scan reads only the
+ * corrected set. Then a fresh scan is queued.
+ */
+export async function addDocuments(input: {
+  dealId: string;
+  files: { path: string; name: string; size: number }[];
+  replace: boolean;
+}): Promise<{ ok: boolean; error?: string }> {
+  const { supabase, user, profile, isAdmin, isActive } = await requireUser();
+  if (!profile?.brokerage_id || !isActive) return { ok: false, error: "Your account is not active." };
+  if (!input.files.length) return { ok: false, error: "No files were uploaded." };
+
+  const { data: deal } = await supabase
+    .from("deals")
+    .select("id, agent_id, brokerage_id")
+    .eq("id", input.dealId)
+    .maybeSingle();
+  if (!deal) return { ok: false, error: "Deal not found." };
+  if (!isAdmin && deal.agent_id !== user.id) return { ok: false, error: "Only the agent or an admin can add files." };
+
+  if (input.replace) {
+    const { data: live } = await supabase
+      .from("documents")
+      .select("id, storage_path")
+      .eq("deal_id", input.dealId)
+      .is("purged_at", null);
+    if (live?.length) {
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const admin = createAdminClient();
+      await admin.storage.from("deal-documents").remove(live.map((d) => d.storage_path));
+      await admin
+        .from("documents")
+        .update({ purged_at: new Date().toISOString() })
+        .in("id", live.map((d) => d.id));
+    }
+  }
+
+  const { DOCUMENT_TTL_MINUTES } = await import("@/lib/deal-types");
+  const expiresAt = new Date(Date.now() + DOCUMENT_TTL_MINUTES * 60_000).toISOString();
+  const { error } = await supabase.from("documents").insert(
+    input.files.map((f) => ({
+      deal_id: input.dealId,
+      brokerage_id: profile.brokerage_id,
+      uploaded_by: user.id,
+      storage_path: f.path,
+      file_name: f.name,
+      file_size: f.size,
+      mime_type: "application/pdf",
+      expires_at: expiresAt,
+    })),
+  );
+  if (error) return { ok: false, error: error.message };
+
+  await supabase.from("deals").update({ status: "scanning", scan_error: null }).eq("id", input.dealId);
+  const r = await requestScan(input.dealId);
+  if (!r.ok) {
+    await supabase.from("deals").update({ status: "needs_attention", scan_error: r.error }).eq("id", input.dealId);
+  }
+  revalidatePath(`/app/deals/${input.dealId}`);
+  revalidatePath("/app");
+  return { ok: true };
+}

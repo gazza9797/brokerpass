@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
+import { CorrectionUpload } from "@/components/correction-upload";
 import { ExpiryCountdown } from "@/components/expiry-countdown";
 import { FindingsReport, type Finding, type ScanSummary } from "@/components/findings-report";
 import { PassCard, type Pass } from "@/components/pass-card";
@@ -189,9 +190,14 @@ export default async function DealPage({
       </section>
 
       <section className="mt-8 rounded-lg border border-line bg-surface p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-ink">Documents</h2>
-          <p className="text-xs text-ink-muted">Files are deleted from our servers 60 minutes after upload. The report stays.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-ink">Documents</h2>
+            <p className="text-xs text-ink-muted">Files are deleted from our servers 60 minutes after upload. The report stays.</p>
+          </div>
+          {canResolve && !scanning && profile?.brokerage_id && (
+            <CorrectionUpload dealId={deal.id} brokerageId={profile.brokerage_id} hasLiveFiles={liveDocs.length > 0} />
+          )}
         </div>
         <ul className="mt-3 divide-y divide-line">
           {(docs ?? []).map((d) => (
